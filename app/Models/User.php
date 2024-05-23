@@ -48,4 +48,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function borrowedRooms(){
+        return $this->hasMany(BorrowedRoom::class, 'borrowed_by');
+    }
+
+    public function updatedBorrowRooms(){
+        return $this->hasMany(BorrowedRoom::class,' updated_by');
+    }
+
+    public function acceptedBy(){
+        return $this->belongsTo(User::class, 'accepted_by');
+    }
+
+    public function acceptedUsers(){
+        return $this->hasMany(User::class, 'accepted_by');
+    }
 }

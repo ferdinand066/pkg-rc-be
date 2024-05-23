@@ -10,4 +10,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Item extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+    ];
+
+    public function borrowedRoomItems(){
+        return $this->hasMany(BorrowedRoomItem::class);
+    }
 }

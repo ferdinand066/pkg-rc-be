@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,3 +36,5 @@ use Illuminate\Support\Facades\Route;
     //     Route::get('verify/{id}', [VerificationController::class, 'verify'])->name('verify');
     //     Route::post('resend', [VerificationController::class, 'resend'])->middleware('auth:api')->name('resend');
     // });
+
+Route::apiResource('room', RoomController::class)->only('index', 'show');

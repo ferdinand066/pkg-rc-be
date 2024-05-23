@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('borrowed_room_items', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('borrowed_room_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignUuid('item_id')->constrained();
             $table->integer('quantity');
             $table->timestamps();

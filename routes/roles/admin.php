@@ -1,12 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Auth\CurrentUserController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\VerificationController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::apiResource('user', UserController::class);
+Route::apiResource('room', RoomController::class)->only('store', 'update', 'destroy');
