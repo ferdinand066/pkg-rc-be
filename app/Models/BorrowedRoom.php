@@ -32,12 +32,14 @@ class BorrowedRoom extends Model
         // check if value format is H:i:s, format to H:i, else just make the same
         return Attribute::make(
             get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
+            set: fn (string $value) => DateTime::createFromFormat('H:i', $value)->format('H:i:s'),
         );
     }
 
     public function endTime(): Attribute {
         return Attribute::make(
             get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
+            set: fn (string $value) => DateTime::createFromFormat('H:i', $value)->format('H:i:s'),
         );
     }
 
