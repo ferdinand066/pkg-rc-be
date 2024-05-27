@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Item extends Model
+class BorrowedRoomAgreement extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
@@ -17,14 +17,16 @@ class Item extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'borrowed_room_id',
+        'agreement_status',
+        'created_by',
     ];
 
-    public function borrowedRoomItems(){
-        return $this->hasMany(BorrowedRoomItem::class);
+    public function borrowedRoom(){
+        return $this->belongsTo(BorrowedRoom::class);
     }
 
-    public function roomItems(){
-        return $this->hasMany(RoomItem::class);
+    public function createdBy(){
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

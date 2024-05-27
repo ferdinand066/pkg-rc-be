@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class CreateRoomRequest extends FormRequest
+class UpdateItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,11 +22,10 @@ class CreateRoomRequest extends FormRequest
      */
     public function rules(): array
     {
+        $itemId = $this->route('item');
+
         return [
-            'name' => 'required|unique:rooms',
-            'floor_id' => 'required|exists:floors,id',
-            'item_id' => 'required|array',
-            'item_id.*' => 'required|exists:items,id',
+            'name' => ['required', Rule::unique('items')->ignore($itemId)],
         ];
     }
 }

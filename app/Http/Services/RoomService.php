@@ -20,9 +20,11 @@ class RoomService
             }, function ($q) {
                 return $q->orderBy('name', 'asc');
             })
-            ->paginate(10)
-            ->onEachSide(1)
-            ->withQueryString();
+            ->when(request()->paginate ?? false, function ($query){
+                return $query->paginate(10)->onEachSide(10)->withQueryString();
+            }, function($query){
+                return $query->get();
+            });
     }
 
     public function create($data){
@@ -33,7 +35,7 @@ class RoomService
     }
 
     public function update(Room $room, $data){
-        return $room->update([
+        return Room::where('id', $room->id)->update([
             'name' => $data['name'],
             'floor_id' => $data['floor_id'],
         ]);

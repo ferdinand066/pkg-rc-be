@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('borrowed_rooms', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('room_id')->constrained();
-            $table->date('borrowed_at');
+            $table->date('borrowed_date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->foreignUuid('borrowed_by')->constrained('users');
-            $table->tinyInteger('borrowed_status')->comment('1: active, 2: accepted, 0: deleted');
+            $table->text('reason');
+            $table->foreignUuid('borrowed_by_user_id')->constrained('users');
+            $table->tinyInteger('borrowed_status')->default(1)->comment('0: canceled, 1: pending, 2: accepted');
             $table->timestamps();
-            $table->foreignUuid('updated_by')->nullable()->default(null)->constrained('users');
+            $table->softDeletes();
         });
     }
 

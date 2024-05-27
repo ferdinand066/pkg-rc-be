@@ -53,10 +53,14 @@ class RouteServiceProvider extends ServiceProvider
             ->group(function () {
                 Route::namespace($this->namespace)
                     ->prefix('admin')
+                    ->as('admin.')
                     ->group(base_path('routes/roles/admin.php'));
-
+                Route::namespace($this->namespace)
+                    ->prefix('general')
+                    ->as('general.')
+                    ->group(base_path('routes/roles/general.php'));
             });
 
-        Route::prefix('general')->as('general.')->group(base_path('routes/roles/general.php'));
+
     }
 }

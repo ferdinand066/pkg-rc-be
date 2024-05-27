@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use DateTime;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BorrowedRoom extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -17,16 +20,33 @@ class BorrowedRoom extends Model
      */
     protected $fillable = [
         'room_id',
-        'borrowed_at',
-        'start_date',
+        'borrowed_date',
+        'start_time',
         'end_time',
-        'borrowed_by',
+        'borrowed_by_user_id',
         'borrowed_status',
-        'updated_by',
+        'reason',
     ];
 
+    public function startTime(): Attribute {
+        // check if value format is H:i:s, format to H:i, else just make the same
+        return Attribute::make(
+            get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
+        );
+    }
+
+    public function endTime(): Attribute {
+        return Attribute::make(
+            get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
+        );
+    }
+
+    public function room(){
+        return $this->belongsTo(Room::class);
+    }
+
     public function borrowedBy(){
-        return $this->belongsTo(User::class, 'borrowed_by');
+        return $this->belongsTo(User::class, 'borrowed_by_user_id');
     }
 
     public function updatedBy(){
@@ -35,5 +55,9 @@ class BorrowedRoom extends Model
 
     public function borrowedRoomItems(){
         return $this->hasMany(BorrowedRoomItem::class);
+    }
+
+    public function borrowedRoomAggreements(){
+        return $this->hasMany(BorrowedRoomAgreement::class);
     }
 }

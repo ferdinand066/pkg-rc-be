@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\CreateRoomRequest;
+use App\Http\Requests\Admin\UpdateRoomRequest;
 use App\Http\Services\RoomItemService;
 use App\Http\Services\RoomService;
 use App\Models\Room;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoomController extends BaseController
@@ -36,10 +36,9 @@ class RoomController extends BaseController
         ];
 
         $roomItemService->manage($roomItemPayload);
-        $room->load('items');
+        $room->load('roomItems.item');
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Successfully create new room', compact('rooms'));
-
+        return $this->sendResponse(Response::HTTP_CREATED, 'Successfully create new room', compact('room'));
     }
 
     /**
@@ -49,15 +48,16 @@ class RoomController extends BaseController
     {
         $room->load('items');
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get room ', compact('room'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get room', compact('room'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreateRoomRequest $request, Room $room, RoomService $service, RoomItemService $roomItemService)
+    public function update(UpdateRoomRequest $request, Room $room, RoomService $service, RoomItemService $roomItemService)
     {
         $validated = $request->validated();
+
         $service->update($room, $validated);
 
         $roomItemPayload = [
@@ -66,9 +66,9 @@ class RoomController extends BaseController
         ];
 
         $roomItemService->manage($roomItemPayload);
-        $room->load('items');
+        $room->load('roomItems.item');
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully update room', compact('rooms'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully update room', compact('room'));
     }
 
     /**
@@ -78,6 +78,6 @@ class RoomController extends BaseController
     {
         $room->delete();
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Succesfully delete room', []);
+        return $this->sendResponse(Response::HTTP_OK, 'Succesfully delete room', []);
     }
 }

@@ -11,7 +11,7 @@ class RoomItemService
         $roomItems = RoomItem::where('room_id', $data['room_id'])->get();
 
         foreach ($data['item_id'] as $itemId){
-            RoomItem::updateOrInsert(['item_id' => $itemId, 'room_id' => $data['room_id']], []);
+            RoomItem::updateOrCreate(['item_id' => $itemId, 'room_id' => $data['room_id']], ['quantity' => 100]);
         }
 
         foreach ($roomItems as $roomItem){

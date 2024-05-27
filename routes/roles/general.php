@@ -5,6 +5,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\BorrowedRoomController;
+use App\Http\Controllers\FloorController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,21 +23,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-    // Route::prefix('auth')->name('auth.')->group(function () {
-    //     Route::post('login', LoginController::class)->name('login');
-    //     // Route::post('login/social-media', SocialMediaLoginController::class)->name('login.social-media');
-    //     Route::post('register', RegisterController::class)->name('register');
-
-    //     Route::post('forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('forgot-password');
-    //     Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset-password');
-    //     Route::get('token/{token}', [ForgotPasswordController::class, 'checkTokenValidity'])->name('token.valid');
-
-    //     Route::get('me', CurrentUserController::class)->name('me')->middleware('auth:api');
-    // });
-
-    // Route::prefix('email')->name('verification.')->group(function () {
-    //     Route::get('verify/{id}', [VerificationController::class, 'verify'])->name('verify');
-    //     Route::post('resend', [VerificationController::class, 'resend'])->middleware('auth:api')->name('resend');
-    // });
-
 Route::apiResource('room', RoomController::class)->only('index', 'show');
+Route::apiResource('floor', FloorController::class)->only('index', 'show');
+Route::apiResource('item', ItemController::class)->only('index', 'show');
+
+Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('index', 'show');
+Route::middleware(['verified'])->group(function(){
+    Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('store', 'update', 'destroy');
+});

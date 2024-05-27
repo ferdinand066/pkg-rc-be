@@ -16,6 +16,7 @@ class Room extends Model
      *
      * @var array<int, string>
      */
+
     protected $fillable = [
         'name',
         'floor_id'
@@ -27,5 +28,9 @@ class Room extends Model
 
     public function roomItems(){
         return $this->hasMany(RoomItem::class);
+    }
+
+    public function borrows(){
+        return $this->hasMany(BorrowedRoom::class);
     }
 }

@@ -14,7 +14,7 @@ class UserService
     {
         if ($data !== null) extract($data);
 
-        return User::when($orderBy, function ($q, $orderBy) use ($dataOrder) {
+        return User::with('acceptedBy')->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
                 return $q->orderBy('name', 'asc');
