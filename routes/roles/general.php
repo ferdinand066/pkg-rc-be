@@ -9,6 +9,7 @@ use App\Http\Controllers\BorrowedRoomController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,4 +31,5 @@ Route::apiResource('item', ItemController::class)->only('index', 'show');
 Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('index', 'show');
 Route::middleware(['verified'])->group(function(){
     Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('store', 'update', 'destroy');
+    Route::get('schedule', ScheduleController::class)->name('schedule');
 });

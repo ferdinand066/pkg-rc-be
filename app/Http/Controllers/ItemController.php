@@ -18,7 +18,7 @@ class ItemController extends BaseController
     {
         $items = Item::with('roomItems.room')->orderBy('name', 'asc')->get();
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get items', compact('items'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data barang', compact('items'));
     }
 
     /**
@@ -29,7 +29,7 @@ class ItemController extends BaseController
         $validated = $request->validated();
         $item = $service->create($validated);
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Successfully create new item', compact('item'));
+        return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat data barang baru', compact('item'));
     }
 
     /**
@@ -37,7 +37,7 @@ class ItemController extends BaseController
      */
     public function show(Item $item)
     {
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get items', compact('item'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data barang', compact('item'));
     }
 
     /**
@@ -48,7 +48,7 @@ class ItemController extends BaseController
         $validated = $request->validated();
         $service->update($item, $validated);
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Successfully update room', compact('room'));
+        return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil mengubah data barang!', compact('room'));
     }
 
     /**
@@ -58,6 +58,6 @@ class ItemController extends BaseController
     {
         $item->delete();
 
-        return $this->sendResponse(Response::HTTP_OK, 'Successfully delete item', []);
+        return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus data barang!', []);
     }
 }

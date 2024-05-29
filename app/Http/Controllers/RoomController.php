@@ -19,7 +19,7 @@ class RoomController extends BaseController
         $data = $this->getSearchAndSort();
         $rooms = $service->index($data);
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get rooms', compact('rooms'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data ruangan!', compact('rooms'));
     }
 
     /**
@@ -38,7 +38,7 @@ class RoomController extends BaseController
         $roomItemService->manage($roomItemPayload);
         $room->load('roomItems.item');
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Successfully create new room', compact('room'));
+        return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat data ruangan', compact('room'));
     }
 
     /**
@@ -48,7 +48,7 @@ class RoomController extends BaseController
     {
         $room->load('items');
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get room', compact('room'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data ruangan', compact('room'));
     }
 
     /**
@@ -68,7 +68,7 @@ class RoomController extends BaseController
         $roomItemService->manage($roomItemPayload);
         $room->load('roomItems.item');
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully update room', compact('room'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mengubah data ruangan', compact('room'));
     }
 
     /**
@@ -78,6 +78,6 @@ class RoomController extends BaseController
     {
         $room->delete();
 
-        return $this->sendResponse(Response::HTTP_OK, 'Succesfully delete room', []);
+        return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus data ruangan', []);
     }
 }

@@ -22,7 +22,7 @@ class BorrowedRoomController extends BaseController
         $data = $this->getSearchAndSort();
         $borrowedRooms = $service->index($data);
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get borrowed rooms', compact('borrowedRooms'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan proposal pinjam ruang!', compact('borrowedRooms'));
     }
 
     /**
@@ -39,7 +39,7 @@ class BorrowedRoomController extends BaseController
 
             $borrowedRoom->load('borrowedRoomItems.item');
 
-            return $this->sendResponse(Response::HTTP_CREATED, 'Successfully create new borrowed room', compact('borrowedRoom'));
+            return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat proposal pinjam ruang!', compact('borrowedRoom'));
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());
         } catch (Exception $e) {
@@ -55,7 +55,7 @@ class BorrowedRoomController extends BaseController
     {
         $borrowedRoom->load('borrowedRoomItems.item', 'borrowedRoomAgreements.createdBy', 'borrowedBy', 'room');
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get borrowed room', compact('borrowedRoom'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan proposal pinjam ruang!', compact('borrowedRoom'));
     }
 
     /**
@@ -67,7 +67,7 @@ class BorrowedRoomController extends BaseController
 
         $service->update($borrowedRoom, $validated);
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully update borrowed room', compact('borrowedRoom'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mengubah proposal pinjam ruang!', compact('borrowedRoom'));
     }
 
     /**
@@ -77,7 +77,7 @@ class BorrowedRoomController extends BaseController
     {
         $borrowedRoom->delete();
 
-        return $this->sendResponse(Response::HTTP_OK, 'Succesfully delete borrowed room', []);
+        return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus proposal pinjam ruang!', []);
     }
 
     public function accept(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
@@ -95,7 +95,7 @@ class BorrowedRoomController extends BaseController
                 default:
                     break;
             }
-            return $this->sendResponse(Response::HTTP_OK, 'Succesfully accept borrow room request', []);
+            return $this->sendResponse(Response::HTTP_OK, 'Berhasil menyetujui proposal pinjam ruang!', []);
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class BorrowedRoomController extends BaseController
             $service->updateStatus($borrowedRoom, [
                 'borrowed_status' => 0
             ]);
-            return $this->sendResponse(Response::HTTP_OK, 'Succesfully decline borrow room request', []);
+            return $this->sendResponse(Response::HTTP_OK, 'Berhasil menolak proposal pinjam ruang!', []);
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());
         } catch (Exception $e) {

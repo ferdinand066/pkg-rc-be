@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\CurrentUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Http\Request;
@@ -28,10 +29,13 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset-password');
     Route::get('token/{token}', [ForgotPasswordController::class, 'checkTokenValidity'])->name('token.valid');
 
-    Route::get('me', CurrentUserController::class)->name('me')->middleware('auth:api');
+    Route::middleware('auth:api')->group(function(){
+        Route::get('me', CurrentUserController::class)->name('me');
+        Route::get('logout', LogoutController::class)->name('logout');
+    });
 });
 
 Route::prefix('email')->name('verification.')->group(function () {
     Route::get('verify/{id}', [VerificationController::class, 'verify'])->name('verify');
-    Route::post('resend', [VerificationController::class, 'resend'])->middleware('auth:api')->name('resend');
+    Route::get('resend', [VerificationController::class, 'resend'])->middleware('auth:api')->name('resend');
 });

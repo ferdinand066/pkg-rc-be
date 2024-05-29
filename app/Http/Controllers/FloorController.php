@@ -15,7 +15,7 @@ class FloorController extends BaseController
     {
         $floors = Floor::orderBy('created_at', 'asc')->get();
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get rooms', compact('floors'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data ruangan!', compact('floors'));
     }
 
     /**
