@@ -88,4 +88,22 @@ class BorrowedRoomService
             'borrowed_status' => $data['borrowed_status'],
         ]);
     }
+
+    public function declineOtherRequest(BorrowedRoom $borrowedRoom){
+        return BorrowedRoom::where('id', '<>', $borrowedRoom->id)
+            ->where('room_id', $borrowedRoom->room_id)
+            ->where('borrowed_date', $borrowedRoom->borrowed_date)
+            ->where(function($query) use ($borrowedRoom) {
+                $query->whereBetween('start_time', [$borrowedRoom->start_time, $borrowedRoom->end_time])
+                    ->orWhereBetween('end_time', [$borrowedRoom->start_time, $borrowedRoom->end_time])
+                    ->orWhere(function($query) use ($borrowedRoom) {
+                        $query->where('start_time', '<=', $borrowedRoom->start_time)
+                            ->where('end_time', '>=', $borrowedRoom->end_time);
+                    });
+            })
+            ->where('borrowed_status', 1)
+            ->update([
+                'borrowed_status' => 0
+            ]);
+    }
 }

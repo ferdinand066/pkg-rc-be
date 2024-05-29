@@ -19,7 +19,7 @@ class BorrowedRoomAgreement extends Model
     protected $fillable = [
         'borrowed_room_id',
         'agreement_status',
-        'created_by',
+        'created_by_user_id',
     ];
 
     public function borrowedRoom(){
@@ -27,6 +27,6 @@ class BorrowedRoomAgreement extends Model
     }
 
     public function createdBy(){
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 }

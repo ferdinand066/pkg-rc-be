@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\CreateBorrowedRoomRequest;
 use App\Http\Requests\Admin\UpdateBorrowedRoomRequest;
+use App\Http\Services\BorrowedRoomAgreementService;
 use App\Http\Services\BorrowedRoomItemService;
 use App\Http\Services\BorrowedRoomService;
 use App\Models\BorrowedRoom;
@@ -52,7 +53,7 @@ class BorrowedRoomController extends BaseController
      */
     public function show(BorrowedRoom $borrowedRoom)
     {
-        $borrowedRoom->load('room');
+        $borrowedRoom->load('borrowedRoomItems.item', 'borrowedRoomAgreements.createdBy', 'borrowedBy', 'room');
 
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get borrowed room', compact('borrowedRoom'));
     }
@@ -77,5 +78,44 @@ class BorrowedRoomController extends BaseController
         $borrowedRoom->delete();
 
         return $this->sendResponse(Response::HTTP_OK, 'Succesfully delete borrowed room', []);
+    }
+
+    public function accept(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+        try {
+            $agreementService->create($borrowedRoom, 1);
+            $status = $agreementService->ableToAccept($borrowedRoom);
+            switch ($status) {
+                case 'accepted':
+                    $service->updateStatus($borrowedRoom, [
+                        'borrowed_status' => 2
+                    ]);
+                    $service->declineOtherRequest($borrowedRoom);
+
+                    break;
+                default:
+                    break;
+            }
+            return $this->sendResponse(Response::HTTP_OK, 'Succesfully accept borrow room request', []);
+        } catch (HttpException $e) {
+            return $this->sendError($e->getStatusCode(), $e->getMessage());
+        } catch (Exception $e) {
+            // Handle other exceptions
+            return $this->sendError(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        }
+    }
+
+    public function decline(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+        try {
+            $agreementService->create($borrowedRoom, 0);
+            $service->updateStatus($borrowedRoom, [
+                'borrowed_status' => 0
+            ]);
+            return $this->sendResponse(Response::HTTP_OK, 'Succesfully decline borrow room request', []);
+        } catch (HttpException $e) {
+            return $this->sendError($e->getStatusCode(), $e->getMessage());
+        } catch (Exception $e) {
+            // Handle other exceptions
+            return $this->sendError(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        }
     }
 }

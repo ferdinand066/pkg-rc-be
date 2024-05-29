@@ -59,7 +59,7 @@ class BorrowedRoom extends Model
         return $this->hasMany(BorrowedRoomItem::class);
     }
 
-    public function borrowedRoomAggreements(){
+    public function borrowedRoomAgreements(){
         return $this->hasMany(BorrowedRoomAgreement::class);
     }
 }
