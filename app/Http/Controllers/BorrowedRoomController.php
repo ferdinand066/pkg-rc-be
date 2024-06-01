@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Actions\Model\BorrowedRoom\PendingUserAcceptanceAction;
 use App\Http\Requests\Admin\CreateBorrowedRoomRequest;
 use App\Http\Requests\Admin\UpdateBorrowedRoomRequest;
 use App\Http\Services\BorrowedRoomAgreementService;
@@ -51,9 +52,12 @@ class BorrowedRoomController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(BorrowedRoom $borrowedRoom)
+    public function show(BorrowedRoom $borrowedRoom, PendingUserAcceptanceAction $action)
     {
         $borrowedRoom->load('borrowedRoomItems.item', 'borrowedRoomAgreements.createdBy', 'borrowedBy', 'room');
+        $users = $action->handle($borrowedRoom);
+
+        $borrowedRoom->pending_users = $users;
 
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan proposal pinjam ruang!', compact('borrowedRoom'));
     }

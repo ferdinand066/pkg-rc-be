@@ -15,7 +15,7 @@ class BaseController extends Controller
      *
      * @return JsonResponse
      */
-    public function sendResponse(int $code = 200, string $message, array $result){
+    public function sendResponse(int $code = 200, string $message = '', array $result = []){
         $response = [
             'success' => true,
             'data' => $result,
@@ -34,7 +34,7 @@ class BaseController extends Controller
      *
      * @return JsonResponse
      */
-    public function sendError(int $code = 400, string $error, array $errorMessages = []){
+    public function sendError(int $code = 400, string $error = '', array $errorMessages = []){
         $response = [
             'success' => false,
             'message' => $error
