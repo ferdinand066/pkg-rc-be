@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RoomItem extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
-    
+
     /**
      * The attributes that are mass assignable.
      *

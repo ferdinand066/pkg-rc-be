@@ -35,6 +35,7 @@ class RoomSeeder extends Seeder
                         'id' => Str::uuid(),
                         'name' => $roomName,
                         'floor_id' => $floorId,
+                        'capacity' => 50,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

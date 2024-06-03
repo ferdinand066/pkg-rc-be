@@ -29,7 +29,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'address' => fake()->unique()->address,
-            'role' => rand(1, 100) <= 80 ? 1 : 2,
+            // 'role' => rand(1, 100) <= 80 ? 1 : 2,
+            'role' => 1,
             'account_accepted_at' => now(),
             'remember_token' => Str::random(10),
         ];

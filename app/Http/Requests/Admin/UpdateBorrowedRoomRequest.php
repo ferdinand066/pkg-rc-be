@@ -23,12 +23,17 @@ class UpdateBorrowedRoomRequest extends FormRequest
     {
         return [
             'room_id' => 'required|exists:rooms,id',
+            'pic_name' => 'required|string',
+            'pic_phone_number' => 'required|string',
+            'capacity' => 'required|integer',
+            'event_name' => 'required|string',
             'borrowed_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-            'reason' => 'required|string',
-            'item_id' => 'array',
-            'item_id.*' => 'required|exists:items,id',
+            'start_borrowing_time' => 'required|date_format:H:i',
+            'start_event_time' => 'required|date_format:H:i|after:start_borrowing_time',
+            'end_event_time' => 'required|date_format:H:i|after:start_event_time',
+            'description' => 'required|string',
+            'items.*.item_id' => 'required|exists:items,id',
+            'items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

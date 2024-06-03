@@ -20,15 +20,20 @@ class BorrowedRoom extends Model
      */
     protected $fillable = [
         'room_id',
+        'pic_name',
+        'pic_phone_number',
+        'capacity',
+        'event_name',
         'borrowed_date',
-        'start_time',
-        'end_time',
+        'start_borrowing_time',
+        'start_event_time',
+        'end_event_time',
+        'description',
         'borrowed_by_user_id',
         'borrowed_status',
-        'reason',
     ];
 
-    public function startTime(): Attribute {
+    public function startBorrowingTime(): Attribute {
         // check if value format is H:i:s, format to H:i, else just make the same
         return Attribute::make(
             get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
@@ -36,7 +41,15 @@ class BorrowedRoom extends Model
         );
     }
 
-    public function endTime(): Attribute {
+    public function startEventTime(): Attribute {
+        // check if value format is H:i:s, format to H:i, else just make the same
+        return Attribute::make(
+            get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
+            set: fn (string $value) => DateTime::createFromFormat('H:i', $value)->format('H:i:s'),
+        );
+    }
+
+    public function endEventTime(): Attribute {
         return Attribute::make(
             get: fn (string $value) => DateTime::createFromFormat('H:i:s', $value)->format('H:i'),
             set: fn (string $value) => DateTime::createFromFormat('H:i', $value)->format('H:i:s'),

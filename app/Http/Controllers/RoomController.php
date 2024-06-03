@@ -32,7 +32,7 @@ class RoomController extends BaseController
 
         $roomItemPayload = [
             'room_id' => $room->id,
-            'item_id' => $validated['item_id'],
+            'items' => $validated['items'],
         ];
 
         $roomItemService->manage($roomItemPayload);
@@ -62,7 +62,7 @@ class RoomController extends BaseController
 
         $roomItemPayload = [
             'room_id' => $room->id,
-            'item_id' => $validated['item_id'],
+            'items' => $validated['items'],
         ];
 
         $roomItemService->manage($roomItemPayload);

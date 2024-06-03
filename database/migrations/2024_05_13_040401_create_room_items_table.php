@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('room_id');
             $table->foreignUuid('item_id');
-            $table->integer('quantity');
+            $table->integer('quantity')->default(1);
             $table->unique(['room_id', 'item_id']);
             $table->timestamps();
             $table->softDeletes();

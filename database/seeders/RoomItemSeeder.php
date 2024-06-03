@@ -27,7 +27,7 @@ class RoomItemSeeder extends Seeder
                 RoomItem::create([
                     'room_id' => $room->id,
                     'item_id' => $item->id,
-                    'quantity' => 0,
+                    'quantity' => rand(1, 100),
                 ]);
             }
         }

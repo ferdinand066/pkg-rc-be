@@ -40,11 +40,11 @@ class BorrowedRoomService
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
             ->where(function($query) use ($data) {
-                $query->whereBetween('start_time', [$data['start_time'], $data['end_time']])
-                    ->orWhereBetween('end_time', [$data['start_time'], $data['end_time']])
+                $query->whereBetween('start_borrowing_time', [$data['start_borrowing_time'], $data['end_event_time']])
+                    ->orWhereBetween('end_event_time', [$data['start_borrowing_time'], $data['end_event_time']])
                     ->orWhere(function($query) use ($data) {
-                        $query->where('start_time', '<=', $data['start_time'])
-                            ->where('end_time', '>=', $data['end_time']);
+                        $query->where('start_borrowing_time', '<=', $data['start_borrowing_time'])
+                            ->where('end_event_time', '>=', $data['end_event_time']);
                     });
             })
             ->exists();
@@ -55,10 +55,15 @@ class BorrowedRoomService
 
         return BorrowedRoom::create([
             'room_id' => $data['room_id'],
+            'pic_name' => $data['pic_name'],
+            'pic_phone_number' => $data['pic_phone_number'],
+            'capacity' => $data['capacity'],
+            'event_name' => $data['event_name'],
             'borrowed_date' => $data['borrowed_date'],
-            'start_time' => $data['start_time'],
-            'end_time' => $data['end_time'],
-            'reason' => $data['reason'],
+            'start_borrowing_time' => $data['start_borrowing_time'],
+            'start_event_time' => $data['start_event_time'],
+            'end_event_time' => $data['end_event_time'],
+            'description' => $data['description'],
             'borrowed_by_user_id' => Auth::user()->id,
         ]);
     }
@@ -69,11 +74,11 @@ class BorrowedRoomService
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
             ->where(function($query) use ($data) {
-                $query->whereBetween('start_time', [$data['start_time'], $data['end_time']])
-                    ->orWhereBetween('end_time', [$data['start_time'], $data['end_time']])
+                $query->whereBetween('start_borrowing_time', [$data['start_borrowing_time'], $data['end_event_time']])
+                    ->orWhereBetween('end_event_time', [$data['start_borrowing_time'], $data['end_event_time']])
                     ->orWhere(function($query) use ($data) {
-                        $query->where('start_time', '<=', $data['start_time'])
-                            ->where('end_time', '>=', $data['end_time']);
+                        $query->where('start_borrowing_time', '<=', $data['start_borrowing_time'])
+                            ->where('end_event_time', '>=', $data['end_event_time']);
                     });
             })
             ->exists();
@@ -84,10 +89,15 @@ class BorrowedRoomService
 
         return BorrowedRoom::where('id', $borrowedRoom->id)->update([
             'room_id' => $data['room_id'],
+            'pic_name' => $data['pic_name'],
+            'pic_phone_number' => $data['pic_phone_number'],
+            'capacity' => $data['capacity'],
+            'event_name' => $data['event_name'],
             'borrowed_date' => $data['borrowed_date'],
-            'start_time' => $data['start_time'],
-            'end_time' => $data['end_time'],
-            'reason' => $data['reason'],
+            'start_borrowing_time' => $data['start_borrowing_time'],
+            'start_event_time' => $data['start_event_time'],
+            'end_event_time' => $data['end_event_time'],
+            'description' => $data['description'],
         ]);
     }
 
@@ -102,11 +112,11 @@ class BorrowedRoomService
             ->where('room_id', $borrowedRoom->room_id)
             ->where('borrowed_date', $borrowedRoom->borrowed_date)
             ->where(function($query) use ($borrowedRoom) {
-                $query->whereBetween('start_time', [$borrowedRoom->start_time, $borrowedRoom->end_time])
-                    ->orWhereBetween('end_time', [$borrowedRoom->start_time, $borrowedRoom->end_time])
+                $query->whereBetween('start_borrowing_time', [$borrowedRoom->start_borrowing_time, $borrowedRoom->end_event_time])
+                    ->orWhereBetween('end_event_time', [$borrowedRoom->start_borrowing_time, $borrowedRoom->end_event_time])
                     ->orWhere(function($query) use ($borrowedRoom) {
-                        $query->where('start_time', '<=', $borrowedRoom->start_time)
-                            ->where('end_time', '>=', $borrowedRoom->end_time);
+                        $query->where('start_borrowing_time', '<=', $borrowedRoom->start_borrowing_time)
+                            ->where('end_event_time', '>=', $borrowedRoom->end_event_time);
                     });
             })
             ->where('borrowed_status', 1)

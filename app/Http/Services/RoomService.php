@@ -31,6 +31,7 @@ class RoomService
         return Room::create([
             'name' => $data['name'],
             'floor_id' => $data['floor_id'],
+            'capacity' => $data['capacity'],
         ]);
     }
 
@@ -38,6 +39,7 @@ class RoomService
         return Room::where('id', $room->id)->update([
             'name' => $data['name'],
             'floor_id' => $data['floor_id'],
+            'capacity' => $data['capacity'],
         ]);
     }
 }

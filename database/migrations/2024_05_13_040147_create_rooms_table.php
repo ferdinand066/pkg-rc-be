@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name')->unique();
             $table->foreignUuid('floor_id')->constrained();
+            $table->integer('capacity')->default(10);
             $table->timestamps();
             $table->softDeletes();
         });

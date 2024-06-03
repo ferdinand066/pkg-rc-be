@@ -27,8 +27,10 @@ class UpdateRoomRequest extends FormRequest
         return [
             'name' => ['required', Rule::unique('rooms')->ignore($roomId)],
             'floor_id' => 'required|exists:floors,id',
-            'item_id' => 'required|array',
-            'item_id.*' => 'required|exists:items,id',
+            'capacity' => 'required|integer',
+            'items' => 'required|array',
+            'items.*.item_id' => 'required|exists:items,id',
+            'items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

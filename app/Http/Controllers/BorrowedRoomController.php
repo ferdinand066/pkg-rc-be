@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Actions\Model\BorrowedRoom\PendingUserAcceptanceAction;
+use App\Http\Requests\Admin\AcceptBorrowedRoomRequest;
 use App\Http\Requests\Admin\CreateBorrowedRoomRequest;
 use App\Http\Requests\Admin\UpdateBorrowedRoomRequest;
 use App\Http\Services\BorrowedRoomAgreementService;
@@ -84,7 +85,13 @@ class BorrowedRoomController extends BaseController
         return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus proposal pinjam ruang!', []);
     }
 
-    public function accept(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+    public function accept(AcceptBorrowedRoomRequest $request, BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+        $validated = $request->validated();
+
+        $borrowedRoom->update([
+            'start_borrowing_time' => $validated['start_borrowing_time']
+        ]);
+
         try {
             $agreementService->create($borrowedRoom, 1);
             $status = $agreementService->ableToAccept($borrowedRoom);
@@ -99,6 +106,7 @@ class BorrowedRoomController extends BaseController
                 default:
                     break;
             }
+
             return $this->sendResponse(Response::HTTP_OK, 'Berhasil menyetujui proposal pinjam ruang!', []);
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());

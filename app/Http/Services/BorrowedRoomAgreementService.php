@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\BorrowedRoom;
 use App\Models\BorrowedRoomAgreement;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -33,7 +34,9 @@ class BorrowedRoomAgreementService
         }
 
         $count = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', 1]])->count();
-        if ($count >= 2) return "accepted";
+        $userCount = User::where('role', 2)->count();
+
+        if ($count == $userCount) return "accepted";
 
         return "pending";
     }
