@@ -36,7 +36,7 @@ class BorrowedRoomService
     }
 
     public function create($data){
-        $conflictingBookings = BorrowedRoom::where('borrowed_status', 2)
+        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
             ->where(function($query) use ($data) {
@@ -50,7 +50,7 @@ class BorrowedRoomService
             ->exists();
 
         if ($conflictingBookings) {
-            throw new ConflictHttpException('Ruangan ini sudah dibook pada jam yang dipilih.');
+            throw new ConflictHttpException('Ruangan ini sudah dipesan pada jam yang dipilih.');
         }
 
         return BorrowedRoom::create([
@@ -69,7 +69,7 @@ class BorrowedRoomService
     }
 
     public function update(BorrowedRoom $borrowedRoom, $data){
-        $conflictingBookings = BorrowedRoom::where('borrowed_status', 2)
+        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
             ->where('id', '<>', $borrowedRoom->id)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])

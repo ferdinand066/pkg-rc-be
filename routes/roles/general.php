@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BorrowedRoomController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\ItemController;
@@ -32,4 +33,5 @@ Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('index'
 Route::middleware(['verified'])->group(function(){
     Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('store', 'update', 'destroy');
     Route::get('schedule', ScheduleController::class)->name('schedule');
+    Route::get('room/availability/{room}', AvailabilityController::class)->name('room.availibility');
 });
