@@ -17,7 +17,7 @@ class BorrowedRoomService
             ->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
-                return $q->orderBy('borrowed_date', 'asc');
+                return $q->orderBy('borrowed_date', 'desc');
             })
             ->when($isUser ?? true, function($q){
                 return $q->where('borrowed_by_user_id', Auth::user()->id);
