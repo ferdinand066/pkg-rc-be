@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Services\Admin\UserService;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends BaseController
@@ -22,14 +23,6 @@ class UserController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -42,15 +35,7 @@ class UserController extends BaseController
      */
     public function show(User $user)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully get users', compact('user'));
     }
 
     /**
@@ -58,7 +43,18 @@ class UserController extends BaseController
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'role' => 'required|integer|between:1,2'
+        ]);
+
+        if ($user->id === Auth::user()->id) {
+            return $this->sendError(Response::HTTP_UNPROCESSABLE_ENTITY, 'You cannot update your role!');
+        }
+
+        $user->update($validated);
+        $user->refresh();
+
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully update user role', compact('user'));
     }
 
     /**
@@ -67,5 +63,16 @@ class UserController extends BaseController
     public function destroy(User $user)
     {
         //
+    }
+
+    public function activate(User $user){
+        $user->update([
+            'account_accepted_at' => now(),
+            'account_accepted_by' => Auth::user()->id,
+        ]);
+
+        $user->refresh();
+
+        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully activate this user', compact('user'));
     }
 }

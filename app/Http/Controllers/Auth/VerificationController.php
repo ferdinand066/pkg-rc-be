@@ -21,7 +21,9 @@ class VerificationController extends BaseController
             $user->markEmailAsVerified();
         }
 
-        return $this->sendResponse(Response::HTTP_OK, 'Successfully verified', []);
+        $user->refresh();
+
+        return $this->sendResponse(Response::HTTP_OK, 'Successfully verified', compact('user'));
     }
 
     public function resend(){
