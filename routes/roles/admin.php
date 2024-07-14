@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('user/{user}/activate', [UserController::class, 'activate'])->name('user.activate');
 Route::apiResource('user', UserController::class);
 Route::apiResource('room', RoomController::class)->only('store', 'update', 'destroy');
 Route::apiResource('item', ItemController::class)->only('store', 'update', 'destroy');
