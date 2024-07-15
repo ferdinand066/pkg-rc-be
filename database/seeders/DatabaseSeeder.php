@@ -17,10 +17,20 @@ class DatabaseSeeder extends Seeder
     {
         User::create([
             'name' => 'Fer',
-            'email' => 'ferdinandg066@gmail.com',
+            'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
             'address' => 'Jl. asd',
             'role' => '2',
+            'account_accepted_at' => now(),
+            'email_verified_at' => now(),
+        ]);
+        
+        User::create([
+            'name' => 'Fer',
+            'email' => 'ferdinandg066@gmail.com',
+            'password' => Hash::make('password'),
+            'address' => 'Jl. asd',
+            'role' => '1',
             'account_accepted_at' => now(),
             'email_verified_at' => now(),
         ]);

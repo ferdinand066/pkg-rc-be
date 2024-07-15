@@ -18,7 +18,7 @@ class RoomService
         return Room::with('floor', 'roomItems.item')->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
-                return $q->orderBy('name', 'asc');
+                return $q->orderBy('floor_id', 'asc')->orderBy('name', 'asc');
             })
             ->when(request()->paginate ?? false, function ($query){
                 return $query->paginate(10)->onEachSide(10)->withQueryString();

@@ -15,10 +15,9 @@ class FloorSeeder extends Seeder
     public function run(): void
     {
         $floors = ["Lt. Dasar", "Lantai 1", "Lantai 2", "Lantai 3"];
-        
+
         foreach ($floors as $floor) {
             Floor::insert([
-                'id' => Str::uuid(),
                 'name' => $floor,
                 'created_at' => now(),
                 'updated_at' => now(),

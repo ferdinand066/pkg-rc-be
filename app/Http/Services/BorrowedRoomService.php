@@ -13,15 +13,17 @@ class BorrowedRoomService
         if ($data !== null) extract($data);
         $isUser = Auth::user()->role === 1;
 
-        return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room')
+        return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room.floor')
             ->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
-                return $q->orderBy('borrowed_date', 'desc');
+                return $q->orderBy('borrowed_date', 'asc')
+                ->orderBy('start_borrowing_time', 'asc');
             })
             ->when($isUser ?? true, function($q){
                 return $q->where('borrowed_by_user_id', Auth::user()->id);
             })
+            ->whereRaw("CONCAT(borrowed_date, ' ', end_event_time) > ?", [now()])
             ->paginate(10)
             ->onEachSide(1)
             ->withQueryString();
