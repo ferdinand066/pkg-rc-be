@@ -6,11 +6,15 @@ use App\Http\Actions\Model\BorrowedRoom\PendingUserAcceptanceAction;
 use App\Http\Requests\Admin\AcceptBorrowedRoomRequest;
 use App\Http\Requests\Admin\CreateBorrowedRoomRequest;
 use App\Http\Requests\Admin\UpdateBorrowedRoomRequest;
+use App\Http\Services\Admin\UserService;
 use App\Http\Services\BorrowedRoomAgreementService;
 use App\Http\Services\BorrowedRoomItemService;
 use App\Http\Services\BorrowedRoomService;
+use App\Mail\BookingRoomInformationMailClass;
 use App\Models\BorrowedRoom;
+use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -30,7 +34,7 @@ class BorrowedRoomController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateBorrowedRoomRequest $request, BorrowedRoomService $service, BorrowedRoomItemService $borrowedRoomItemService)
+    public function store(CreateBorrowedRoomRequest $request, BorrowedRoomService $service, BorrowedRoomItemService $borrowedRoomItemService, UserService $userService)
     {
         $validated = $request->validated();
 
@@ -39,7 +43,18 @@ class BorrowedRoomController extends BaseController
 
             $borrowedRoomItemService->manage($borrowedRoom->id, $validated);
 
-            $borrowedRoom->load('borrowedRoomItems.item');
+            $borrowedRoom->load('borrowedRoomItems.item', 'room');
+
+            $admins = $userService->getAdmins();
+
+            foreach ($admins as $admin){
+                Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
+                    'name' => $admin->name,
+                    'view' => 'mail.booking-information',
+                    'message' => 'Ada booking baru oleh ' . $borrowedRoom->pic_name . ' pada ruangan ' . $borrowedRoom->room->name,
+                    'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
+                ])));
+            }
 
             return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat proposal pinjam ruang!', compact('borrowedRoom'));
         } catch (HttpException $e) {
@@ -101,6 +116,15 @@ class BorrowedRoomController extends BaseController
                         'borrowed_status' => 2
                     ]);
                     $service->declineOtherRequest($borrowedRoom);
+                    
+                    $borrowedRoom->load('room');
+                    $user = User::find($borrowedRoom->borrowed_by_user_id);
+                    Mail::to($user->email)->send(new BookingRoomInformationMailClass(([
+                        'name' => $user->name,
+                        'view' => 'mail.booking-information',
+                        'message' => 'Booking Anda untuk ' . $borrowedRoom->event_name . ' pada ruangan ' . $borrowedRoom->room->name . ' telah disetujui!',
+                        'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
+                    ])));
 
                     break;
                 default:
@@ -122,6 +146,17 @@ class BorrowedRoomController extends BaseController
             $service->updateStatus($borrowedRoom, [
                 'borrowed_status' => 0
             ]);
+
+
+            $borrowedRoom->load('room');
+            $user = User::find($borrowedRoom->borrowed_by_user_id);
+            Mail::to($user->email)->send(new BookingRoomInformationMailClass(([
+                'name' => $user->name,
+                'view' => 'mail.booking-information',
+                'message' => 'Booking Anda untuk ' . $borrowedRoom->event_name . ' pada ruangan ' . $borrowedRoom->room->name . ' telah ditolak!',
+                'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
+            ])));
+
             return $this->sendResponse(Response::HTTP_OK, 'Berhasil menolak proposal pinjam ruang!', []);
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());

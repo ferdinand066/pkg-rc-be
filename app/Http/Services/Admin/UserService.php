@@ -24,4 +24,8 @@ class UserService
             ->onEachSide(1)
             ->withQueryString();
     }
+
+    public function getAdmins(){
+        return User::where('role', 2)->get();
+    }
 }
