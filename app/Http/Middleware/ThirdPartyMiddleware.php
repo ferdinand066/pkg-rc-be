@@ -51,9 +51,9 @@ class ThirdPartyMiddleware
         if (!isset($decryptedData['value'])){
             return response()->json(['error' => 'There are no value'], 401);
         }
-        
+
         $currentTimestamp = time();
-    
+
         // Check if the timestamp is within the acceptable range (5 minutes)
         $timestamp = $decryptedData['timestamp'];
         // if (($currentTimestamp - $timestamp) > 300) { // 300 seconds = 5 minutes
@@ -64,7 +64,7 @@ class ThirdPartyMiddleware
         if (!$userId){
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        
+
         Auth::loginUsingId($userId->user_id);
 
         return $next($request);

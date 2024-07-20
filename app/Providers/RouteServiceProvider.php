@@ -61,7 +61,7 @@ class RouteServiceProvider extends ServiceProvider
                     ->group(base_path('routes/roles/general.php'));
             });
 
-        Route::middleware(['api', 'reginacaeli.auth', 'without.id'])
+        Route::middleware(['api', 'reginacaeli.auth'])
             ->namespace($this->namespace)
             ->group(function () {
                 Route::namespace($this->namespace)
