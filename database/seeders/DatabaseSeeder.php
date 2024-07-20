@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
             ItemSeeder::class,
             RoomItemSeeder::class,
+            ReportReceiverSeeder::class,
         ]);
     }
 }

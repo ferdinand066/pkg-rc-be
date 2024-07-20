@@ -24,9 +24,11 @@ class BorrowedRoomService
                 return $q->where('borrowed_by_user_id', Auth::user()->id);
             })
             ->whereRaw("CONCAT(borrowed_date, ' ', end_event_time) > ?", [now()])
-            ->paginate(10)
-            ->onEachSide(1)
-            ->withQueryString();
+            ->when(request()->paginate ?? false, function ($query){
+                return $query->paginate(10)->onEachSide(10)->withQueryString();
+            }, function($query){
+                return $query->get();
+            });
     }
 
     public function activeRequest($startDate, $endDate){
@@ -34,6 +36,7 @@ class BorrowedRoomService
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room')
             ->whereBetween('borrowed_date', [$startDate, $endDate])
             ->where('borrowed_status', 2)
+            ->orderBy('start_borrowing_time', 'asc')
             ->get();
     }
 

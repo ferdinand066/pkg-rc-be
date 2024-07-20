@@ -14,7 +14,8 @@ class RoomService
     public function index(array $data = null)
     {
         if ($data !== null) extract($data);
-
+        error_log(request()->paginate);
+        
         return Room::with('floor', 'roomItems.item')->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
