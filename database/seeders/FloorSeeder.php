@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Floor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class FloorSeeder extends Seeder
 {
@@ -14,7 +12,7 @@ class FloorSeeder extends Seeder
      */
     public function run(): void
     {
-        $floors = ["Lt. Dasar", "Lantai 1", "Lantai 2", "Lantai 3"];
+        $floors = ["Akita", "Lt. Dasar", "Lantai 1", "Lantai 2", "Lantai 3", "Lain Lain"];
 
         foreach ($floors as $floor) {
             Floor::insert([

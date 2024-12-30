@@ -13,6 +13,8 @@ class BorrowedRoomService
         if ($data !== null) extract($data);
         $isUser = Auth::user()->role === 1;
 
+        $searchFields = ['event_name', 'pic_name'];
+
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room.floor')
             ->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
@@ -24,8 +26,19 @@ class BorrowedRoomService
                 return $q->where('borrowed_by_user_id', Auth::user()->id);
             })
             ->whereRaw("CONCAT(borrowed_date, ' ', end_event_time) > ?", [now()])
+            ->when($search ?? false, function($q) use ($search, $searchFields){
+                $q->where(function ($query) use ($search, $searchFields) {
+                    foreach ($searchFields as $field) {
+                        $query->orWhere($field, 'like', '%' . $search . '%');
+                    }
+
+                    $query->orWhereHas('room', function ($subQuery) use ($search) {
+                        $subQuery->where('name', 'like', '%' . $search . '%');
+                    });
+                });
+            })
             ->when(request()->paginate ?? false, function ($query){
-                return $query->paginate(10)->onEachSide(10)->withQueryString();
+                return $query->paginate(10)->onEachSide(1)->withQueryString();
             }, function($query){
                 return $query->get();
             });

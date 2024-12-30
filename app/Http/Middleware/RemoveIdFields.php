@@ -20,7 +20,6 @@ class RemoveIdFields
         // Ensure the response is a JSON response
         if ($response->headers->get('Content-Type') === 'application/json') {
             $data = json_decode($response->getContent(), true);
-            error_log($response->getContent());
 
             // Recursively remove _id fields
             $data = $this->removeIdFields($data);

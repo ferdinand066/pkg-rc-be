@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::insert([
+            'id' => '9dc625f4-2057-4644-bd8c-e8c7944f1cc9',
             'name' => 'Fer',
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
@@ -23,6 +24,8 @@ class DatabaseSeeder extends Seeder
             'role' => '2',
             'account_accepted_at' => now(),
             'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
         
         User::create([

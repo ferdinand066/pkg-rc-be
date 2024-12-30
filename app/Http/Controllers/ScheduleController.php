@@ -16,14 +16,15 @@ class ScheduleController extends BaseController
     public function __invoke(Request $request, RoomService $roomService, BorrowedRoomService $borrowedRoomService)
     {
         $data = $this->getSearchAndSort();
-        $rooms = $roomService->index($data);
+        // $rooms = $roomService->index($data);
 
         // get startDate and endDate from $request, if theres no exists, set default value to today
-        $startDate = $request->query('start_date', Carbon::today()->toDateString());
-        $endDate = $request->query('end_date', Carbon::today()->toDateString());
+        $date = $request->query('date', Carbon::today()->toDateString());
+        $startTime = $request->query('start_time', "00:00:00");
+        $endTime = $request->query('end_time', "23:59:59");
 
-        $borrowedRooms = $borrowedRoomService->activeRequest($startDate, $endDate);
+        $borrowedRooms = $borrowedRoomService->activeRequest($date . " " . $startTime, $date . " " . $endTime);
 
-        return $this->sendResponse(Response::HTTP_OK, 'Berhasil mendapatkan schedule', compact('rooms', 'borrowedRooms'));
+        return $this->sendResponse(Response::HTTP_OK, 'Berhasil mendapatkan schedule', compact('borrowedRooms'));
     }
 }

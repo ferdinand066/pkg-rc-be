@@ -16,10 +16,12 @@ class RoomSeeder extends Seeder
     public function run(): void
     {
         $floorRoomMap = [
-            "Lt. Dasar" => ["Kantin"],
-            "Lantai 1" => ["St. Andreas", "St. Bartolomeus", "St. Felix", "Aula Keluarga Kudus Nazareth"],
-            "Lantai 2" => ["St. Paulus", "Ruang DPH"],
-            "Lantai 3" => ["St. Yohanes", "St. Matius"]
+            "Akita" => ["Aula Akita", "Kapel Akita"],
+            "Lt. Dasar" => ["Kantin", "Area Kristus Raja", "Sekretariat"],
+            "Lantai 1" => ["Gereja RC", "Aula KKN", "St. Andreas", "St. Bartolomeus", "St. Filipus", "St. Felix", "St. Yakobus"],
+            "Lantai 2" => ["Ruang DPH", "Kapel HK Yesus dan Maria", "St. Paulus", "St. Petrus", ],
+            "Lantai 3" => ["St. Gabriel", "St. Matius", "St. Yohanes", "St. Lukas"],
+            "Lain Lain" => ["Lain Lain"]
         ];
 
         $floors = Floor::all();
