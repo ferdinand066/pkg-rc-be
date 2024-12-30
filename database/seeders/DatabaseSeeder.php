@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        \App\Models\User::factory(100)->create();
+        // \App\Models\User::factory(100)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             FloorSeeder::class,
             RoomSeeder::class,
             ItemSeeder::class,
-            RoomItemSeeder::class,
+            // RoomItemSeeder::class,
             ReportReceiverSeeder::class,
         ]);
     }
