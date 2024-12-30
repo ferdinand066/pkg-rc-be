@@ -27,7 +27,7 @@ class BorrowedRoomSeeder extends Seeder
 
         foreach ($rooms as $room) {
             // Randomly decide the number of events (3 to 5) for each room
-            $numberOfEvents = $faker->numberBetween(3, 5);
+            $numberOfEvents = $faker->numberBetween(5, 8);
             $previousEndTime = Carbon::today()->setTime(8, 0)->addMinutes($faker->numberBetween(0, 60));
 
             for ($i = 0; $i < $numberOfEvents; $i++) {

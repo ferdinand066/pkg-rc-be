@@ -16,7 +16,12 @@ class ItemController extends BaseController
      */
     public function index()
     {
-        $items = Item::with('roomItems.room')->orderBy('name', 'asc')->get();
+        $items = Item::orderBy('name', 'asc')
+        ->when(request()->paginate ?? false, function ($query){
+            return $query->with('roomItems.room')->paginate(10)->onEachSide(10)->withQueryString();
+        }, function($query){
+            return $query->get();
+        });
 
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data barang', compact('items'));
     }
