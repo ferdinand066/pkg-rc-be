@@ -37,7 +37,7 @@ class BorrowedRoomService
                     });
                 });
             })
-            ->when(request()->paginate ?? false, function ($query){
+            ->when((request()->paginate == "true") ?? false, function ($query){
                 return $query->paginate(10)->onEachSide(1)->withQueryString();
             }, function($query){
                 return $query->get();

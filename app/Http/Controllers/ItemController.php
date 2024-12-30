@@ -17,7 +17,7 @@ class ItemController extends BaseController
     public function index()
     {
         $items = Item::orderBy('name', 'asc')
-        ->when(request()->paginate ?? false, function ($query){
+        ->when((request()->paginate == "true") ?? false, function ($query){
             return $query->with('roomItems.room')->paginate(10)->onEachSide(10)->withQueryString();
         }, function($query){
             return $query->get();

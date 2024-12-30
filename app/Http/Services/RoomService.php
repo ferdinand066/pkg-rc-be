@@ -20,7 +20,7 @@ class RoomService
             }, function ($q) {
                 return $q->orderBy('floor_id', 'asc')->orderBy('name', 'asc');
             })
-            ->when(request()->paginate ?? false, function ($query){
+            ->when((request()->paginate == "true") ?? false, function ($query){
                 return $query->paginate(10)->onEachSide(1)->withQueryString();
             }, function($query){
                 return $query->get();
