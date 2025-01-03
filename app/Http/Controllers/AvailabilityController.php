@@ -22,16 +22,28 @@ class AvailabilityController extends BaseController
             ['borrowed_status', '<>', 0]
         ])->when($validated['borrowed_room_id'] ?? false, function($q, $borrowedRoomId){
             $q->where('id', '<>', $borrowedRoomId);
-        })->select(['start_borrowing_time', 'end_event_time'])->get();
+        })->select(['start_borrowing_time', 'end_event_time'])->orderBy('start_borrowing_time')->get();
 
         $slots = [];
 
         // Initial boundary start time
         $lastEndTime = Carbon::createFromTimeString('00:00');
+        $minimumBorrowingTime = env('MINIMUM_BORROWING_TIME', 30);
 
         foreach ($borrowedRooms as $borrowedRoom) {
             $start = Carbon::createFromFormat('H:i', $borrowedRoom->start_borrowing_time);
             $end = Carbon::createFromFormat('H:i', $borrowedRoom->end_event_time);
+
+            $startMinutes = (int)(floor($start->minute / $minimumBorrowingTime) * $minimumBorrowingTime);
+            $start->setMinutes($startMinutes);
+            
+            // Ceil end time to the nearest multiple of MINIMUM_BORROWING_TIME
+            $endMinutes = (int)(ceil($end->minute / $minimumBorrowingTime) * $minimumBorrowingTime);
+            if ($endMinutes == 60) {
+                $end->addHour()->setMinutes(0)->setSeconds(0);
+            } else {
+                $end->setMinutes($endMinutes)->setSeconds(0);
+            }
 
             // Add the available slot before the current borrowing starts
             if ($lastEndTime->lt($start)) {

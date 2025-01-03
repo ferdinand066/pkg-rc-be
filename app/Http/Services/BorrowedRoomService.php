@@ -48,7 +48,7 @@ class BorrowedRoomService
         // check borrowedRoom between startDate and endDate and borrowed_status in 1 and 2
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room')
             ->whereBetween('borrowed_date', [$startDate, $endDate])
-            ->where('borrowed_status', 2)
+            ->whereIn('borrowed_status', [1, 2])
             ->orderBy('start_borrowing_time', 'asc')
             ->get();
     }
