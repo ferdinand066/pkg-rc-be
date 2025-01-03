@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        // \App\Http\Middleware\SimulateSlowResponse::class,
         // \App\Http\Middleware\RemoveIdFields::class,
     ];
 
@@ -67,5 +68,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'reginacaeli.auth' => \App\Http\Middleware\ThirdPartyMiddleware::class,
         'without.id' => \App\Http\Middleware\RemoveIdFields::class,
+        'slow' => \App\Http\Middleware\SimulateSlowResponse::class,
     ];
 }

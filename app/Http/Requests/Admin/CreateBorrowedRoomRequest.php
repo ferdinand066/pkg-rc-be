@@ -29,7 +29,7 @@ class CreateBorrowedRoomRequest extends FormRequest
             'event_name' => 'required|string',
             'borrowed_date' => 'required|date|after_or_equal:today',
             'start_borrowing_time' => 'required|date_format:H:i',
-            'start_event_time' => 'required|date_format:H:i|after:start_borrowing_time',
+            'start_event_time' => 'required|date_format:H:i|after_or_equal:start_borrowing_time',
             'end_event_time' => 'required|date_format:H:i|after:start_event_time',
             'description' => 'required|string',
             'items' => 'array|nullable',

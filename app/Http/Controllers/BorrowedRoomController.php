@@ -86,6 +86,9 @@ class BorrowedRoomController extends BaseController
         $validated = $request->validated();
 
         $service->update($borrowedRoom, $validated);
+        $borrowedRoomItemService->manage($borrowedRoom->id, $validated);
+
+        $borrowedRoom->load('borrowedRoomItems.item', 'room');
 
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mengubah proposal pinjam ruang!', compact('borrowedRoom'));
     }

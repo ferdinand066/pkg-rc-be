@@ -48,7 +48,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     private function routeManagement()
     {
-        Route::middleware(['api', 'auth:api'])
+        Route::middleware(['api', 'auth:api', 'slow:1'])
             ->namespace($this->namespace)
             ->group(function () {
                 Route::namespace($this->namespace)
@@ -61,7 +61,7 @@ class RouteServiceProvider extends ServiceProvider
                     ->group(base_path('routes/roles/general.php'));
             });
 
-        Route::middleware(['api', 'reginacaeli.auth'])
+        Route::middleware(['api', 'reginacaeli.auth', 'slow:1'])
             ->namespace($this->namespace)
             ->group(function () {
                 Route::namespace($this->namespace)
