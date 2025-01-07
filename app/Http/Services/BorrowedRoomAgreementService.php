@@ -34,9 +34,11 @@ class BorrowedRoomAgreementService
         }
 
         $count = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', 1]])->count();
+        // TODO: set total users to accept a request
         $userCount = User::where('role', 2)->count();
 
-        if ($count == $userCount) return "accepted";
+        // if ($count == $userCount) return "accepted";
+        if ($count === 2) return "accepted";
 
         return "pending";
     }
