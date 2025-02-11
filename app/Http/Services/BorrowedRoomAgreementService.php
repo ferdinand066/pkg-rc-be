@@ -33,27 +33,27 @@ class BorrowedRoomAgreementService
             return "declined";
         }
 
-        $requiredEmail = [
-            'pkg@parokipik.or.id'
-        ];
+        // $requiredEmail = [
+        //     'pkg@parokipik.or.id'
+        // ];
 
-        $users = User::whereIn('email', $requiredEmail)->pluck('id')->toArray();
+        // $users = User::whereIn('email', $requiredEmail)->pluck('id')->toArray();
 
-        $countRequiredUsers = BorrowedRoomAgreement::where([
-            ['borrowed_room_id', $borrowedRoom->id], 
-            ['agreement_status', 1]
-        ])->whereIn('created_by_user_id', $users)->count();
+        // $countRequiredUsers = BorrowedRoomAgreement::where([
+        //     ['borrowed_room_id', $borrowedRoom->id], 
+        //     ['agreement_status', 1]
+        // ])->whereIn('created_by_user_id', $users)->count();
 
-        if ($countRequiredUsers !== count($requiredEmail)) {
-            return "pending";
-        }
+        // if ($countRequiredUsers !== count($requiredEmail)) {
+        //     return "pending";
+        // }
 
         $count = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', 1]])->count();
         // TODO: set total users to accept a request
         // $userCount = User::where('role', 2)->count();
 
         // if ($count == $userCount) return "accepted";
-        if ($count === 2) return "accepted";
+        if ($count === 1) return "accepted";
 
         return "pending";
     }
