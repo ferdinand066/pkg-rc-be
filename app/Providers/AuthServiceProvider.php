@@ -35,7 +35,10 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            $url = str_replace(env('APP_URL') . '/email/verify', env('FE_APP_URL') . '/verify-email', $url);
+            error_log($url);
+            error_log(env('APP_URL'));
+            error_log(env('FE_APP_URL'));
+            $url = str_replace(env('APP_URL') . '/verify-email', env('FE_APP_URL') . '/verify-email', $url);
             return (new MailMessage)
                 ->subject('Verify Email Address')
                 ->line('Click the button below to verify your email address.')
