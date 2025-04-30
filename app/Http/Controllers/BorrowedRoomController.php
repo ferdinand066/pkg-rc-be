@@ -40,9 +40,7 @@ class BorrowedRoomController extends BaseController
 
         try {
             $borrowedRoom = $service->create($validated);
-
             $borrowedRoomItemService->manage($borrowedRoom->id, $validated);
-
             $borrowedRoom->load('borrowedRoomItems.item', 'room');
 
             $admins = $userService->getAdmins();
@@ -51,7 +49,7 @@ class BorrowedRoomController extends BaseController
                 Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
                     'name' => $admin->name,
                     'view' => 'mail.booking-information',
-                    'message' => 'Ada booking baru oleh ' . $borrowedRoom->pic_name . ' pada ruangan ' . $borrowedRoom->room->name,
+                    'message' => "Ada booking baru oleh {$borrowedRoom->pic_name} di ruangan {$borrowedRoom->room->name} pada {$borrowedRoom->borrowed_date} {$borrowedRoom->start_borrowing_time} sampai {$borrowedRoom->end_event_time}",
                     'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
                 ])));
             }
@@ -119,15 +117,7 @@ class BorrowedRoomController extends BaseController
                         'borrowed_status' => 2
                     ]);
                     $service->declineOtherRequest($borrowedRoom);
-                    
-                    $borrowedRoom->load('room');
-                    $user = User::find($borrowedRoom->borrowed_by_user_id);
-                    Mail::to($user->email)->send(new BookingRoomInformationMailClass(([
-                        'name' => $user->name,
-                        'view' => 'mail.booking-information',
-                        'message' => 'Booking Anda untuk ' . $borrowedRoom->event_name . ' pada ruangan ' . $borrowedRoom->room->name . ' telah disetujui!',
-                        'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
-                    ])));
+                    $this->notifyUserBookingStatus($borrowedRoom, 'disetujui');
 
                     break;
                 default:
@@ -150,16 +140,7 @@ class BorrowedRoomController extends BaseController
                 'borrowed_status' => 0
             ]);
 
-
-            $borrowedRoom->load('room');
-            $user = User::find($borrowedRoom->borrowed_by_user_id);
-            Mail::to($user->email)->send(new BookingRoomInformationMailClass(([
-                'name' => $user->name,
-                'view' => 'mail.booking-information',
-                'message' => 'Booking Anda untuk ' . $borrowedRoom->event_name . ' pada ruangan ' . $borrowedRoom->room->name . ' telah ditolak!',
-                'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
-            ])));
-
+            $this->notifyUserBookingStatus($borrowedRoom, 'ditolak');
             return $this->sendResponse(Response::HTTP_OK, 'Berhasil menolak proposal pinjam ruang!', []);
         } catch (HttpException $e) {
             return $this->sendError($e->getStatusCode(), $e->getMessage());
@@ -167,5 +148,18 @@ class BorrowedRoomController extends BaseController
             // Handle other exceptions
             return $this->sendError(Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
+    }
+
+    private function notifyUserBookingStatus(BorrowedRoom $borrowedRoom, string $statusMessage)
+    {
+        $borrowedRoom->load('room');
+        $user = User::find($borrowedRoom->borrowed_by_user_id);
+
+        Mail::to($user->email)->send(new BookingRoomInformationMailClass([
+            'name' => $user->name,
+            'view' => 'mail.booking-information',
+            'message' => "Booking Anda untuk {$borrowedRoom->event_name} pada ruangan {$borrowedRoom->room->name} telah {$statusMessage}",
+            'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
+        ]));
     }
 }

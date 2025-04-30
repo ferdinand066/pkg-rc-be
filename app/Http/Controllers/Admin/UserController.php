@@ -67,12 +67,24 @@ class UserController extends BaseController
 
     public function activate(User $user){
         $user->update([
+            'email_verified_at' => now(),
             'account_accepted_at' => now(),
             'account_accepted_by' => Auth::user()->id,
         ]);
 
         $user->refresh();
 
-        return $this->sendResponse(Response::HTTP_ACCEPTED, 'Successfully activate this user', compact('user'));
+        return $this->sendResponse(Response::HTTP_ACCEPTED, "Successfully activate {$user->name}'s account.", compact('user'));
+    }
+
+    public function reject(User $user){
+        $user->update([
+            'account_accepted_by' => Auth::user()->id,
+            'deleted_at' => now(),
+        ]);
+
+        $user->refresh();
+
+        return $this->sendResponse(Response::HTTP_ACCEPTED, "Successfully reject {$user->name}'s ({$user->email}) account creation!", compact('user'));
     }
 }
