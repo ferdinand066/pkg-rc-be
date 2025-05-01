@@ -17,6 +17,23 @@ class BorrowedRoomService
 
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room.floor')
             ->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
+                if ($orderBy === "borrowed_date") {
+                    return $q->orderBy('borrowed_date', $dataOrder ?? "asc")
+                    ->orderBy('start_borrowing_time', 'asc');
+                }
+
+                if ($orderBy === "room_name") {
+                    return $q->join('rooms', 'borrowed_rooms.room_id', '=', 'rooms.id')
+                         ->orderBy('rooms.name', $dataOrder ?? 'asc')
+                         ->select('borrowed_rooms.*'); // Needed to prevent column ambiguity
+                }
+
+                if ($orderBy === "floor") {
+                    return $q->join('rooms', 'borrowed_rooms.room_id', '=', 'rooms.id')
+                         ->orderBy('rooms.floor_id', $dataOrder ?? 'asc')
+                         ->select('borrowed_rooms.*');
+                }
+
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
                 return $q->orderBy('borrowed_date', 'asc')

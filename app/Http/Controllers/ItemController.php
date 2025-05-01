@@ -14,14 +14,10 @@ class ItemController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ItemService $service)
     {
-        $items = Item::orderBy('name', 'asc')
-        ->when((request()->paginate == "true") ?? false, function ($query){
-            return $query->with('roomItems.room')->paginate(10)->onEachSide(10)->withQueryString();
-        }, function($query){
-            return $query->get();
-        });
+        $data = $this->getSearchAndSort();
+        $items = $service->index($data);
 
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data barang', compact('items'));
     }
