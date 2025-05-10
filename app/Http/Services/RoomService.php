@@ -23,6 +23,9 @@ class RoomService
             }, function ($q) {
                 return $q->orderBy('name', 'asc');
             })
+            ->when((request()->floor_id) ?? false, function ($query, $floorId){
+                return $query->where('floor_id', $floorId);
+            })
             ->when((request()->paginate == "true") ?? false, function ($query){
                 return $query->paginate(10)->onEachSide(1)->withQueryString();
             }, function($query){

@@ -53,7 +53,7 @@ class BorrowedRoomAgreementService
         // $userCount = User::where('role', 2)->count();
 
         // if ($count == $userCount) return "accepted";
-        if ($count === 1) return "accepted";
+        if ($count >= 1) return "accepted";
 
         return "pending";
     }

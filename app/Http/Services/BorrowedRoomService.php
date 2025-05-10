@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Models\BorrowedRoom;
+use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -52,6 +53,23 @@ class BorrowedRoomService
                     $query->orWhereHas('room', function ($subQuery) use ($search) {
                         $subQuery->where('name', 'like', '%' . $search . '%');
                     });
+                });
+            })
+            ->when(request()->start_date ?? false, function($q){
+                return $q->where('borrowed_date', '>=', request()->start_date);
+            })
+            ->when(request()->end_date ?? false, function($q){
+                return $q->where('borrowed_date', '<=', request()->end_date);
+            })
+            ->when(request()->status ?? false, function($q){
+                return $q->whereIn('borrowed_status', request()->status);
+            })
+            ->when(request()->floor_id ?? false, function($q){
+                return $q->when(request()->room_id ?? false, function($qb){
+                    return $qb->whereIn('room_id', request()->room_id);
+                }, function($q){
+                    $rooms = Room::where('floor_id', request()->floor_id)->pluck('id')->toArray();
+                    return $q->whereIn('room_id', $rooms);
                 });
             })
             ->when((request()->paginate == "true") ?? false, function ($query){
