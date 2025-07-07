@@ -11,6 +11,7 @@ use App\Http\Services\BorrowedRoomAgreementService;
 use App\Http\Services\BorrowedRoomItemService;
 use App\Http\Services\BorrowedRoomService;
 use App\Mail\BookingRoomInformationMailClass;
+use App\Mail\DeleteBookingRoomInformationMailClass;
 use App\Models\BorrowedRoom;
 use App\Models\User;
 use Exception;
@@ -45,7 +46,7 @@ class BorrowedRoomController extends BaseController
 
             $admins = $userService->getAdmins();
 
-            foreach ($admins as $admin){
+            foreach ($admins as $admin) {
                 Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
                     'name' => $admin->name,
                     'view' => 'mail.booking-information',
@@ -94,14 +95,29 @@ class BorrowedRoomController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BorrowedRoom $borrowedRoom)
+    public function destroy(BorrowedRoom $borrowedRoom, UserService $userService)
     {
+        $previousBorrowedRoom = $borrowedRoom->load('room');
         $borrowedRoom->delete();
+
+        if ($previousBorrowedRoom->borrowed_status === 2) {
+            $admins = $userService->getAdmins();
+
+            foreach ($admins as $admin) {
+                Mail::to($admin->email)->send(new DeleteBookingRoomInformationMailClass(([
+                    'name' => $admin->name,
+                    'view' => 'mail.booking-information',
+                    'message' => "Booking untuk {$previousBorrowedRoom->event_name} di ruangan {$previousBorrowedRoom->room->name} pada {$previousBorrowedRoom->borrowed_date} {$previousBorrowedRoom->start_borrowing_time} sampai {$previousBorrowedRoom->end_event_time} telah dibatalkan",
+                    'link' => env('FE_APP_URL') . '/room-request'
+                ])));
+            }
+        }
 
         return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus proposal pinjam ruang!', []);
     }
 
-    public function accept(AcceptBorrowedRoomRequest $request, BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+    public function accept(AcceptBorrowedRoomRequest $request, BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service)
+    {
         $validated = $request->validated();
 
         $borrowedRoom->update([
@@ -133,7 +149,8 @@ class BorrowedRoomController extends BaseController
         }
     }
 
-    public function decline(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service){
+    public function decline(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service)
+    {
         try {
             $agreementService->create($borrowedRoom, 0);
             $service->updateStatus($borrowedRoom, [
