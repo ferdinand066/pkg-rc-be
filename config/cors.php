@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173', 'http://localhost:4173', '*.fege.my.id', '*.biareginacaeli.com', '*.reginacaeli.id'],
+    'allowed_origins' => ['http://localhost:5173', 'http://localhost:4173', '*.fege.my.id', '*.biareginacaeli.com', '*.reginacaeli.id', '*.parokipik.org'],
 
     'allowed_origins_patterns' => [],
 
