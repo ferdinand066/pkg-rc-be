@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class BorrowedRoomService
 {
-    public function index(array $data = null)
+    public function index(?array $data = null)
     {
         if ($data !== null) extract($data);
         $isUser = Auth::user()->role === 1;
@@ -20,31 +20,31 @@ class BorrowedRoomService
             ->when($orderBy, function ($q, $orderBy) use ($dataOrder) {
                 if ($orderBy === "borrowed_date") {
                     return $q->orderBy('borrowed_date', $dataOrder ?? "asc")
-                    ->orderBy('start_borrowing_time', 'asc');
+                        ->orderBy('start_borrowing_time', 'asc');
                 }
 
                 if ($orderBy === "room_name") {
                     return $q->join('rooms', 'borrowed_rooms.room_id', '=', 'rooms.id')
-                         ->orderBy('rooms.name', $dataOrder ?? 'asc')
-                         ->select('borrowed_rooms.*'); // Needed to prevent column ambiguity
+                        ->orderBy('rooms.name', $dataOrder ?? 'asc')
+                        ->select('borrowed_rooms.*'); // Needed to prevent column ambiguity
                 }
 
                 if ($orderBy === "floor") {
                     return $q->join('rooms', 'borrowed_rooms.room_id', '=', 'rooms.id')
-                         ->orderBy('rooms.floor_id', $dataOrder ?? 'asc')
-                         ->select('borrowed_rooms.*');
+                        ->orderBy('rooms.floor_id', $dataOrder ?? 'asc')
+                        ->select('borrowed_rooms.*');
                 }
 
                 return $q->orderBy($orderBy, $dataOrder ?? 'asc');
             }, function ($q) {
                 return $q->orderBy('borrowed_date', 'asc')
-                ->orderBy('start_borrowing_time', 'asc');
+                    ->orderBy('start_borrowing_time', 'asc');
             })
-            ->when($isUser ?? true, function($q){
+            ->when($isUser ?? true, function ($q) {
                 return $q->where('borrowed_by_user_id', Auth::user()->id);
             })
             ->whereRaw("CONCAT(borrowed_date, ' ', end_event_time) > ?", [now()])
-            ->when($search ?? false, function($q) use ($search, $searchFields){
+            ->when($search ?? false, function ($q) use ($search, $searchFields) {
                 $q->where(function ($query) use ($search, $searchFields) {
                     foreach ($searchFields as $field) {
                         $query->orWhere($field, 'like', '%' . $search . '%');
@@ -55,31 +55,32 @@ class BorrowedRoomService
                     });
                 });
             })
-            ->when(request()->start_date ?? false, function($q){
+            ->when(request()->start_date ?? false, function ($q) {
                 return $q->where('borrowed_date', '>=', request()->start_date);
             })
-            ->when(request()->end_date ?? false, function($q){
+            ->when(request()->end_date ?? false, function ($q) {
                 return $q->where('borrowed_date', '<=', request()->end_date);
             })
-            ->when(request()->status ?? false, function($q){
+            ->when(request()->status ?? false, function ($q) {
                 return $q->whereIn('borrowed_status', request()->status);
             })
-            ->when(request()->floor_id ?? false, function($q){
-                return $q->when(request()->room_id ?? false, function($qb){
+            ->when(request()->floor_id ?? false, function ($q) {
+                return $q->when(request()->room_id ?? false, function ($qb) {
                     return $qb->whereIn('room_id', request()->room_id);
-                }, function($q){
+                }, function ($q) {
                     $rooms = Room::where('floor_id', request()->floor_id)->pluck('id')->toArray();
                     return $q->whereIn('room_id', $rooms);
                 });
             })
-            ->when((request()->paginate == "true") ?? false, function ($query){
+            ->when((request()->paginate == "true") ?? false, function ($query) {
                 return $query->paginate(10)->onEachSide(1)->withQueryString();
-            }, function($query){
+            }, function ($query) {
                 return $query->get();
             });
     }
 
-    public function activeRequest($startDate, $endDate){
+    public function activeRequest($startDate, $endDate)
+    {
         // check borrowedRoom between startDate and endDate and borrowed_status in 1 and 2
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room')
             // ->whereBetween('borrowed_date', [$startDate, $endDate])
@@ -90,14 +91,15 @@ class BorrowedRoomService
             ->get();
     }
 
-    public function create($data){
+    public function create($data)
+    {
         $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
-            ->where(function($query) use ($data) {
+            ->where(function ($query) use ($data) {
                 $query->whereBetween('start_borrowing_time', [$data['start_borrowing_time'], $data['end_event_time']])
                     ->orWhereBetween('end_event_time', [$data['start_borrowing_time'], $data['end_event_time']])
-                    ->orWhere(function($query) use ($data) {
+                    ->orWhere(function ($query) use ($data) {
                         $query->where('start_borrowing_time', '<=', $data['start_borrowing_time'])
                             ->where('end_event_time', '>=', $data['end_event_time']);
                     });
@@ -123,15 +125,16 @@ class BorrowedRoomService
         ]);
     }
 
-    public function update(BorrowedRoom $borrowedRoom, $data){
+    public function update(BorrowedRoom $borrowedRoom, $data)
+    {
         $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
             ->where('id', '<>', $borrowedRoom->id)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
-            ->where(function($query) use ($data) {
+            ->where(function ($query) use ($data) {
                 $query->whereBetween('start_borrowing_time', [$data['start_borrowing_time'], $data['end_event_time']])
                     ->orWhereBetween('end_event_time', [$data['start_borrowing_time'], $data['end_event_time']])
-                    ->orWhere(function($query) use ($data) {
+                    ->orWhere(function ($query) use ($data) {
                         $query->where('start_borrowing_time', '<=', $data['start_borrowing_time'])
                             ->where('end_event_time', '>=', $data['end_event_time']);
                     });
@@ -156,20 +159,22 @@ class BorrowedRoomService
         ]);
     }
 
-    public function updateStatus(BorrowedRoom $borrowedRoom, $data){
+    public function updateStatus(BorrowedRoom $borrowedRoom, $data)
+    {
         return BorrowedRoom::where('id', $borrowedRoom->id)->update([
             'borrowed_status' => $data['borrowed_status'],
         ]);
     }
 
-    public function declineOtherRequest(BorrowedRoom $borrowedRoom){
+    public function declineOtherRequest(BorrowedRoom $borrowedRoom)
+    {
         return BorrowedRoom::where('id', '<>', $borrowedRoom->id)
             ->where('room_id', $borrowedRoom->room_id)
             ->where('borrowed_date', $borrowedRoom->borrowed_date)
-            ->where(function($query) use ($borrowedRoom) {
+            ->where(function ($query) use ($borrowedRoom) {
                 $query->whereBetween('start_borrowing_time', [$borrowedRoom->start_borrowing_time, $borrowedRoom->end_event_time])
                     ->orWhereBetween('end_event_time', [$borrowedRoom->start_borrowing_time, $borrowedRoom->end_event_time])
-                    ->orWhere(function($query) use ($borrowedRoom) {
+                    ->orWhere(function ($query) use ($borrowedRoom) {
                         $query->where('start_borrowing_time', '<=', $borrowedRoom->start_borrowing_time)
                             ->where('end_event_time', '>=', $borrowedRoom->end_event_time);
                     });
@@ -178,5 +183,21 @@ class BorrowedRoomService
             ->update([
                 'borrowed_status' => 0
             ]);
+    }
+
+    public function getRecurringBorrowedRooms($data)
+    {
+        return BorrowedRoom::where('borrowed_status', '<>', 0)
+            ->whereBetween('borrowed_date', [$data['start_borrowed_date'], $data['end_borrowed_date']])
+            ->where('room_id', $data['room_id'])
+            ->where(function ($query) use ($data) {
+                $query->whereBetween('start_borrowing_time', [$data['start_borrowing_time'], $data['end_event_time']])
+                    ->orWhereBetween('end_event_time', [$data['start_borrowing_time'], $data['end_event_time']])
+                    ->orWhere(function ($query) use ($data) {
+                        $query->where('start_borrowing_time', '<=', $data['start_borrowing_time'])
+                            ->where('end_event_time', '>=', $data['end_event_time']);
+                    });
+            })
+            ->get();
     }
 }

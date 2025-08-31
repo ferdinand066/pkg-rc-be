@@ -6,12 +6,12 @@ use App\Models\RoomItem;
 
 class RoomItemService
 {
-    public function manage(array $data = null)
+    public function manage(?array $data = null)
     {
         $roomItems = RoomItem::where('room_id', $data['room_id'])->get();
         $itemIds = [];
 
-        foreach ($data['items'] as $item){
+        foreach ($data['items'] as $item) {
             $roomItem = RoomItem::withTrashed()
                 ->where('room_id', $data['room_id'])
                 ->where('item_id', $item['item_id'])
@@ -32,8 +32,8 @@ class RoomItemService
             $itemIds[] = $item['item_id'];
         }
 
-        foreach ($roomItems as $roomItem){
-            if (!in_array($roomItem->item_id, $itemIds)){
+        foreach ($roomItems as $roomItem) {
+            if (!in_array($roomItem->item_id, $itemIds)) {
                 $roomItem->delete();
             }
         }

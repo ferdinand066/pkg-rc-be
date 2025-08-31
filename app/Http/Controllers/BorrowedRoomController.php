@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Actions\Model\BorrowedRoom\PendingUserAcceptanceAction;
 use App\Http\Requests\Admin\AcceptBorrowedRoomRequest;
+use App\Http\Requests\Admin\CreateBorrowedRecurringRoomRequest;
 use App\Http\Requests\Admin\CreateBorrowedRoomRequest;
 use App\Http\Requests\Admin\UpdateBorrowedRoomRequest;
 use App\Http\Services\Admin\UserService;
@@ -14,7 +15,9 @@ use App\Mail\BookingRoomInformationMailClass;
 use App\Mail\DeleteBookingRoomInformationMailClass;
 use App\Models\BorrowedRoom;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -45,6 +48,8 @@ class BorrowedRoomController extends BaseController
             $borrowedRoom->load('borrowedRoomItems.item', 'room');
 
             $admins = $userService->getAdmins();
+            $user = Auth::user();
+            $admins[] = $user;
 
             foreach ($admins as $admin) {
                 Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
@@ -114,6 +119,103 @@ class BorrowedRoomController extends BaseController
         }
 
         return $this->sendResponse(Response::HTTP_OK, 'Berhasil menghapus proposal pinjam ruang!', []);
+    }
+
+    /**
+     * Recurring a newly created resource in storage.
+     */
+    public function recurring(CreateBorrowedRecurringRoomRequest $request, BorrowedRoomService $service, BorrowedRoomItemService $borrowedRoomItemService, UserService $userService)
+    {
+        $validated = $request->validated();
+
+        try {
+            $existingBorrowedRooms = $service->getRecurringBorrowedRooms($validated);
+
+            $borrowedRoomsByDate = [];
+            foreach ($existingBorrowedRooms as $borrowedRoom) {
+                $date = $borrowedRoom->borrowed_date;
+                if (!isset($borrowedRoomsByDate[$date])) {
+                    $borrowedRoomsByDate[$date] = [];
+                }
+                $borrowedRoomsByDate[$date][] = $borrowedRoom;
+            }
+
+            $borrowedRooms = [];
+            $skippedDates = [];
+            $currentDate = Carbon::parse($validated['start_borrowed_date']);
+            $endDate = Carbon::parse($validated['end_borrowed_date']);
+
+            while ($currentDate->lte($endDate)) {
+                $dateString = $currentDate->format('Y-m-d');
+
+                // Check if there are existing bookings on this date
+                if (isset($borrowedRoomsByDate[$dateString])) {
+                    $skippedDates[] = $dateString;
+                } else {
+                    // Create booking for this date
+                    $bookingData = $validated;
+                    $bookingData['borrowed_date'] = $dateString;
+
+                    try {
+                        $borrowedRoom = $service->create($bookingData);
+                        $borrowedRoomItemService->manage($borrowedRoom->id, $validated);
+                        $borrowedRooms[] = $borrowedRoom;
+                    } catch (Exception $e) {
+                        // Log error or handle as needed
+                        $skippedDates[] = $dateString;
+                    }
+                }
+
+                // Increment date based on recurring type
+                switch ($validated['recurring']) {
+                    case 'daily':
+                        $currentDate->addDay();
+                        break;
+                    case 'weekly':
+                        $currentDate->addWeek();
+                        break;
+                    case 'monthly':
+                        $currentDate->addMonth();
+                        break;
+                }
+            }
+
+            $admins = $userService->getAdmins();
+
+            $user = Auth::user();
+            $admins[] = $user;
+
+            if (count($borrowedRooms) > 0) {
+                $firstBorrowedRoom = $borrowedRooms[0];
+                $firstBorrowedRoom->load('borrowedRoomItems.item', 'room');
+
+                foreach ($admins as $admin) {
+                    Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
+                        'name' => $admin->name,
+                        'view' => 'mail.recurring-information',
+                        'message' => "Ada " . count($borrowedRooms) . " booking baru oleh {$firstBorrowedRoom->pic_name} di ruangan {$firstBorrowedRoom->room->name} pada:",
+                        'borrowed_rooms' => array_map(function ($borrowedRoom) {
+                            return [
+                                'info' => "{$borrowedRoom->borrowed_date} {$borrowedRoom->start_borrowing_time} sampai {$borrowedRoom->end_event_time}",
+                                'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
+                            ];
+                        }, $borrowedRooms),
+                        'skipped_dates' => array_map(function ($skippedDate) {
+                            return [
+                                'date' => $skippedDate,
+                            ];
+                        }, $skippedDates),
+                    ])));
+                }
+            }
+
+            return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat proposal pinjam ruang!');
+        } catch (HttpException $e) {
+            return $this->sendError($e->getStatusCode(), $e->getMessage());
+        } catch (Exception $e) {
+            // Handle other exceptions
+            return $this->sendError(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        }
     }
 
     public function accept(AcceptBorrowedRoomRequest $request, BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service)

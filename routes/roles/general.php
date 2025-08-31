@@ -31,8 +31,9 @@ Route::apiResource('floor', FloorController::class)->only('index', 'show');
 Route::apiResource('item', ItemController::class)->only('index', 'show');
 
 Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('index', 'show');
-Route::middleware(['verified'])->group(function(){
+Route::middleware(['verified'])->group(function () {
     Route::get('room-schedule', RoomScheduleController::class)->name('room-schedule');
+    Route::post('borrowed-room/recurring', [BorrowedRoomController::class, 'recurring'])->name('borrowed-room.recurring');
     Route::apiResource('borrowed-room', BorrowedRoomController::class)->only('store', 'update', 'destroy');
     Route::get('schedule', ScheduleController::class)->name('schedule');
     Route::get('room/availability/{room}', AvailabilityController::class)->name('room.availibility');

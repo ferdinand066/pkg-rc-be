@@ -11,7 +11,8 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ItemService
 {
-    public function index(array $data = null) {
+    public function index(?array $data = null)
+    {
         if ($data !== null) extract($data);
 
         return Item::when($orderBy, function ($q, $orderBy) use ($dataOrder) {
@@ -19,20 +20,22 @@ class ItemService
         }, function ($q) {
             return $q->orderBy('name', 'asc');
         })
-        ->when((request()->paginate == "true") ?? false, function ($query){
-            return $query->with('roomItems.room')->paginate(10)->onEachSide(10)->withQueryString();
-        }, function($query){
-            return $query->get();
-        });
+            ->when((request()->paginate == "true") ?? false, function ($query) {
+                return $query->with('roomItems.room')->paginate(10)->onEachSide(10)->withQueryString();
+            }, function ($query) {
+                return $query->get();
+            });
     }
 
-    public function create($data){
+    public function create($data)
+    {
         return Item::create([
             'name' => $data['name'],
         ]);
     }
 
-    public function update(Item $Item, $data){
+    public function update(Item $Item, $data)
+    {
         return Item::where('id', $Item->id)->update([
             'name' => $data['name'],
             'floor_id' => $data['floor_id'],
