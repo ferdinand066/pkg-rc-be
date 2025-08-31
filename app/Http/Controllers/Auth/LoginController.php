@@ -84,10 +84,10 @@ class LoginController extends BaseController
         try {
             $user = $action->handle($validated);
             $result = $action->createToken($user);
-            
+
             return $this->sendResponse(Response::HTTP_OK, 'Login Successfully!', $result);
-        } catch (Exception $e){
-            return $this->sendError(Response::HTTP_UNPROCESSABLE_ENTITY, 'Invalid Credential!');
+        } catch (Exception $e) {
+            return $this->sendError(Response::HTTP_UNPROCESSABLE_ENTITY, $e->getMessage());
         }
     }
 }
