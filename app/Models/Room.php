@@ -34,4 +34,8 @@ class Room extends Model
     public function borrows(){
         return $this->hasMany(BorrowedRoom::class);
     }
+
+    public function itemHistories(){
+        return $this->hasMany(ItemHistory::class);
+    }
 }

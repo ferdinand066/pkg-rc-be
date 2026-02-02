@@ -70,4 +70,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function acceptedUsers(){
         return $this->hasMany(User::class, 'account_accepted_by');
     }
+
+    public function itemHistories(){
+        return $this->hasMany(ItemHistory::class);
+    }
 }

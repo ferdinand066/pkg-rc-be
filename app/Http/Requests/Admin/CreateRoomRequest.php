@@ -25,9 +25,6 @@ class CreateRoomRequest extends FormRequest
             'name' => 'required|unique:rooms',
             'floor_id' => 'required|exists:floors,id',
             'capacity' => 'required|integer',
-            'items' => 'required|array',
-            'items.*.item_id' => 'required|exists:items,id',
-            'items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ItemHistoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\BorrowedRoomController;
 use App\Http\Controllers\ItemController;
@@ -22,8 +23,10 @@ Route::post('user/{user}/reject', [UserController::class, 'reject'])->name('user
 Route::apiResource('user', UserController::class);
 Route::apiResource('room', RoomController::class)->only('store', 'update', 'destroy');
 Route::apiResource('item', ItemController::class)->only('store', 'update', 'destroy');
+Route::apiResource('item-history', ItemHistoryController::class)->only('index', 'store');
 
 Route::prefix('borrowed-room')->name('borrowed-room.')->group(function(){
     Route::post('{borrowed_room}/accept', [BorrowedRoomController::class, 'accept'])->name('accept');
     Route::post('{borrowed_room}/decline', [BorrowedRoomController::class, 'decline'])->name('decline');
 });
+

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('item_histories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->number('idle_quantity')->default(0);
+            $table->foreignUuid('item_id')->constrained('items');
+            $table->foreignUuid('room_id')->nullable()->constrained('rooms');
+            $table->integer('quantity');
+            $table->enum('type', ['added', 'removed']);
+            $table->foreignUuid('user_id')->constrained('users');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('item_histories');
     }
 };

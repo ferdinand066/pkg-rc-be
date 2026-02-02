@@ -23,6 +23,10 @@ class CreateItemRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:items',
+            'idle_quantity' => 'required|integer|min:0',
+            'room_items' => 'array|nullable',
+            'room_items.*.room_id' => 'required|exists:rooms,id',
+            'room_items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

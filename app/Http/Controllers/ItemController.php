@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Admin\CreateItemRequest;
 use App\Http\Requests\Admin\UpdateItemRequest;
 use App\Http\Services\ItemService;
+use App\Http\Services\RoomItemService;
 use App\Models\Item;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends BaseController
@@ -25,10 +25,12 @@ class ItemController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateItemRequest $request, ItemService $service)
+    public function store(CreateItemRequest $request, ItemService $service, RoomItemService $roomItemService)
     {
         $validated = $request->validated();
+
         $item = $service->create($validated);
+        $roomItemService->create($item->id, $validated['room_items']);
 
         return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil membuat data barang baru', compact('item'));
     }
@@ -38,6 +40,10 @@ class ItemController extends BaseController
      */
     public function show(Item $item)
     {
+        $item->load([
+            'roomItems' => fn ($query) => $query->whereHas('room'),
+            'roomItems.room',
+        ]);
         return $this->sendResponse(Response::HTTP_ACCEPTED, 'Berhasil mendapatkan data barang', compact('item'));
     }
 
@@ -49,7 +55,7 @@ class ItemController extends BaseController
         $validated = $request->validated();
         $service->update($item, $validated);
 
-        return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil mengubah data barang!', compact('room'));
+        return $this->sendResponse(Response::HTTP_CREATED, 'Berhasil mengubah data barang!', compact('item'));
     }
 
     /**

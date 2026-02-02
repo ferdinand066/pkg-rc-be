@@ -18,6 +18,7 @@ class Item extends Model
      */
     protected $fillable = [
         'name',
+        'idle_quantity',
     ];
 
     public function borrowedRoomItems(){
@@ -26,5 +27,9 @@ class Item extends Model
 
     public function roomItems(){
         return $this->hasMany(RoomItem::class);
+    }
+
+    public function itemHistories(){
+        return $this->hasMany(ItemHistory::class);
     }
 }
