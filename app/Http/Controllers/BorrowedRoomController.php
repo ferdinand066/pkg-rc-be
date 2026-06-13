@@ -45,7 +45,7 @@ class BorrowedRoomController extends BaseController
         try {
             $borrowedRoom = $service->create($validated);
             $borrowedRoomItemService->manage($borrowedRoom->id, $validated);
-            $borrowedRoom->load('borrowedRoomItems.item', 'room');
+            $borrowedRoom->load('borrowedRoomItems.item', 'room', 'borrowedBy');
 
             $admins = $userService->getAdmins();
             $user = Auth::user();
@@ -55,7 +55,7 @@ class BorrowedRoomController extends BaseController
                 Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
                     'name' => $admin->name,
                     'view' => 'mail.booking-information',
-                    'message' => "Ada booking baru oleh {$borrowedRoom->pic_name} di ruangan {$borrowedRoom->room->name} pada {$borrowedRoom->borrowed_date} {$borrowedRoom->start_borrowing_time} sampai {$borrowedRoom->end_event_time}",
+                    'message' => "Ada booking baru oleh {$borrowedRoom->pic_name} ({$borrowedRoom->borrowedBy->email}) di ruangan {$borrowedRoom->room->name} pada {$borrowedRoom->borrowed_date} {$borrowedRoom->start_borrowing_time} sampai {$borrowedRoom->end_event_time}",
                     'link' => env('FE_APP_URL') . '/room-request/' . $borrowedRoom->id
                 ])));
             }
@@ -187,13 +187,13 @@ class BorrowedRoomController extends BaseController
 
             if (count($borrowedRooms) > 0) {
                 $firstBorrowedRoom = $borrowedRooms[0];
-                $firstBorrowedRoom->load('borrowedRoomItems.item', 'room');
+                $firstBorrowedRoom->load('borrowedRoomItems.item', 'room', 'borrowedBy');
 
                 foreach ($admins as $admin) {
                     Mail::to($admin->email)->send(new BookingRoomInformationMailClass(([
                         'name' => $admin->name,
                         'view' => 'mail.recurring-information',
-                        'message' => "Ada " . count($borrowedRooms) . " booking baru oleh {$firstBorrowedRoom->pic_name} di ruangan {$firstBorrowedRoom->room->name} pada:",
+                        'message' => "Ada " . count($borrowedRooms) . " booking baru oleh {$firstBorrowedRoom->pic_name} ({$firstBorrowedRoom->borrowedBy->email}) di ruangan {$firstBorrowedRoom->room->name} pada:",
                         'borrowed_rooms' => array_map(function ($borrowedRoom) {
                             return [
                                 'info' => "{$borrowedRoom->borrowed_date} {$borrowedRoom->start_borrowing_time} sampai {$borrowedRoom->end_event_time}",
