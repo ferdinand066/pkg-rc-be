@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('address');
-            $table->integer('role')->default(1)->comment('1: user, 2:admin');
+            $table->integer('role')->default(1)->comment('1: user, 2:admin, 3:admin_viewer');
             $table->timestamp('account_accepted_at')->nullable();
             $table->foreignUuid('account_accepted_by')->nullable()->default(null)->constrained('users');
             $table->rememberToken();

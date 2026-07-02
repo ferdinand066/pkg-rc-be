@@ -14,10 +14,10 @@ class PendingUserAcceptanceAction {
      * @param  BorrowedRoom  $borrowedRoom
      * @return \Illuminate\Database\Eloquent\Collection|null
      */
-    public function handle(BorrowedRoom $borrowedRoom){ 
+    public function handle(BorrowedRoom $borrowedRoom){
         if ($borrowedRoom->borrowed_status !== 1) return null;
         $borrowedRoomAgreementUserIds = BorrowedRoomAgreement::where('borrowed_room_id', $borrowedRoom->id)->pluck('created_by_user_id')->toArray() ?? [];
 
-        return User::where('role', 2)->whereNotIn('id', $borrowedRoomAgreementUserIds)->get();
+        return User::where('role', User::ROLE_ADMIN)->whereNotIn('id', $borrowedRoomAgreementUserIds)->get();
     }
 }

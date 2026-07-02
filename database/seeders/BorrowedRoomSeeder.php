@@ -20,8 +20,8 @@ class BorrowedRoomSeeder extends Seeder
     public function run(): void
     {
         $rooms = Room::with('roomItems')->get();
-        $admins = User::where('role', 2)->get();
-        $users = User::where('role', 1)->get();
+        $admins = User::where('role', User::ROLE_ADMIN)->get();
+        $users = User::where('role', User::ROLE_USER)->get();
 
         $faker = Faker::create();
 
@@ -72,7 +72,7 @@ class BorrowedRoomSeeder extends Seeder
                     BorrowedRoomAgreement::create([
                         'borrowed_room_id' => $borrowedRoom->id,
                         'created_by_user_id' => $admin->id,
-                        'agreement_status' => $borrowedStatus === 2 ? 1 : 0,
+                        'agreement_status' => $borrowedStatus === BorrowedRoom::BORROWED_STATUS_ACCEPTED ? BorrowedRoomAgreement::AGREEMENT_STATUS_ACCEPTED : BorrowedRoomAgreement::AGREEMENT_STATUS_DECLINED,
                     ]);
                 }
 

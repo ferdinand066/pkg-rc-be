@@ -13,6 +13,10 @@ class BorrowedRoom extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
+    public const BORROWED_STATUS_CANCELED = 0;
+    public const BORROWED_STATUS_PENDING = 1;
+    public const BORROWED_STATUS_ACCEPTED = 2;
+
     /**
      * The attributes that are mass assignable.
      *

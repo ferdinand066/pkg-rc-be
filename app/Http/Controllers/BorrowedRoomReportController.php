@@ -22,12 +22,12 @@ class BorrowedRoomReportController extends BaseController
      */
     public function __invoke(Request $request, RoomService $roomService, BorrowedRoomService $borrowedRoomService)
     {
-        $admin = User::where('role', 2)->first();
+        $admin = User::where('role', User::ROLE_ADMIN)->first();
 
         if (!$admin){
             return $this->sendError(Response::HTTP_UNPROCESSABLE_ENTITY, 'Theres no user with admin role!');
         }
-        
+
         Auth::loginUsingId($admin->id);
         $data = $this->getSearchAndSort();
         $rooms = $roomService->index($data);
@@ -58,7 +58,7 @@ class BorrowedRoomReportController extends BaseController
         $reportReceivers = ReportReceiver::all();
         foreach ($reportReceivers as $reportReceiver){
             Mail::to($reportReceiver->email)->send(new BorrowedRoomReportMail($pdfPath, $pdfFileName, $reportReceiver->name));
-        }        
+        }
 
         return $this->sendResponse(Response::HTTP_OK, 'Successfully send message', []);
     }

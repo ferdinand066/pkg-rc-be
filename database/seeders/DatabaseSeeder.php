@@ -21,19 +21,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
             'address' => 'Jl. asd',
-            'role' => '2',
+            'role' => User::ROLE_ADMIN,
             'account_accepted_at' => now(),
             'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         User::create([
             'name' => 'Fer',
             'email' => 'ferdinandg066@gmail.com',
             'password' => Hash::make('password'),
             'address' => 'Jl. asd',
-            'role' => '1',
+            'role' => User::ROLE_USER,
             'account_accepted_at' => now(),
             'email_verified_at' => now(),
         ]);

@@ -80,11 +80,11 @@ class RegisterController extends BaseController
      * )
      */
     public function __invoke(RegisterRequest $request): JsonResponse
-    { 
+    {
         $validated = $request->validated();
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = $validated['role'] ?? 1;
+        $validated['role'] = $validated['role'] ?? User::ROLE_USER;
         $user = User::create($validated);
 
         $accessToken = $user->createToken('authToken')->accessToken;

@@ -3,10 +3,6 @@
 namespace App\Http\Services\Admin;
 
 use App\Models\User;
-use DateInterval;
-use DateTime;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserService
 {
@@ -35,6 +31,6 @@ class UserService
 
     public function getAdmins()
     {
-        return User::where('role', 2)->get();
+        return User::where('role', User::ROLE_ADMIN)->get();
     }
 }

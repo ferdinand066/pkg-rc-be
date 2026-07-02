@@ -44,7 +44,7 @@ class UserController extends BaseController
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'role' => 'required|integer|between:1,2',
+            'role' => 'required|integer|between:1,2,3',
             'name' => 'required|string',
             'address' => 'required|string',
         ]);

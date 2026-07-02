@@ -28,7 +28,7 @@ class BorrowedRoomAgreementService
     }
 
     public function ableToAccept(BorrowedRoom $borrowedRoom): string {
-        $declineExists = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', 0]])->exists();
+        $declineExists = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', BorrowedRoomAgreement::AGREEMENT_STATUS_DECLINED]])->exists();
         if ($declineExists){
             return "declined";
         }
@@ -40,7 +40,7 @@ class BorrowedRoomAgreementService
         // $users = User::whereIn('email', $requiredEmail)->pluck('id')->toArray();
 
         // $countRequiredUsers = BorrowedRoomAgreement::where([
-        //     ['borrowed_room_id', $borrowedRoom->id], 
+        //     ['borrowed_room_id', $borrowedRoom->id],
         //     ['agreement_status', 1]
         // ])->whereIn('created_by_user_id', $users)->count();
 
@@ -48,7 +48,7 @@ class BorrowedRoomAgreementService
         //     return "pending";
         // }
 
-        $count = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', 1]])->count();
+        $count = BorrowedRoomAgreement::where([['borrowed_room_id', $borrowedRoom->id], ['agreement_status', BorrowedRoomAgreement::AGREEMENT_STATUS_ACCEPTED]])->count();
         // TODO: set total users to accept a request
         // $userCount = User::where('role', 2)->count();
 

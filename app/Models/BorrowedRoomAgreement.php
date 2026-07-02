@@ -11,6 +11,9 @@ class BorrowedRoomAgreement extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
+    public const AGREEMENT_STATUS_DECLINED = 0;
+    public const AGREEMENT_STATUS_ACCEPTED = 1;
+
     /**
      * The attributes that are mass assignable.
      *

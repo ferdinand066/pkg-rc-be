@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\BorrowedRoom;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
@@ -12,7 +13,7 @@ class BorrowedRoomService
     public function index(?array $data = null)
     {
         if ($data !== null) extract($data);
-        $isUser = Auth::user()->role === 1;
+        $isUser = Auth::user()->role === User::ROLE_USER;
 
         $searchFields = ['event_name', 'pic_name'];
 
