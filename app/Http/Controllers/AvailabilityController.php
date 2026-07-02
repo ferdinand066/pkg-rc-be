@@ -19,7 +19,7 @@ class AvailabilityController extends BaseController
         $borrowedRooms = BorrowedRoom::where([
             ['room_id', $room->id],
             ['borrowed_date', $validated['borrowing_date']],
-            ['borrowed_status', '<>', 0]
+            ['borrowed_status', '<>', BorrowedRoom::BORROWED_STATUS_CANCELED]
         ])->when($validated['borrowed_room_id'] ?? false, function($q, $borrowedRoomId){
             $q->where('id', '<>', $borrowedRoomId);
         })->select(['start_borrowing_time', 'end_event_time'])->orderBy('start_borrowing_time')->get();

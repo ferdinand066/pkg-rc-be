@@ -37,7 +37,7 @@ class BorrowedRoomImport implements ToModel, WithHeadingRow
             'end_event_time' => $row['end_event_time'],
             'description' => $row['description'],
             'borrowed_by_user_id' => '9dc625f4-2057-4644-bd8c-e8c7944f1cc9',
-            'borrowed_status' => 2,
+            'borrowed_status' => BorrowedRoom::BORROWED_STATUS_ACCEPTED,
         ]);
     }
 }

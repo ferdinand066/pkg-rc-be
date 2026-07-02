@@ -14,6 +14,7 @@ use App\Http\Services\BorrowedRoomService;
 use App\Mail\BookingRoomInformationMailClass;
 use App\Mail\DeleteBookingRoomInformationMailClass;
 use App\Models\BorrowedRoom;
+use App\Models\BorrowedRoomAgreement;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -105,7 +106,7 @@ class BorrowedRoomController extends BaseController
         $previousBorrowedRoom = $borrowedRoom->load('room');
         $borrowedRoom->delete();
 
-        if ($previousBorrowedRoom->borrowed_status === 2) {
+        if ($previousBorrowedRoom->borrowed_status === BorrowedRoom::BORROWED_STATUS_ACCEPTED) {
             $admins = $userService->getAdmins();
 
             foreach ($admins as $admin) {
@@ -227,12 +228,12 @@ class BorrowedRoomController extends BaseController
         ]);
 
         try {
-            $agreementService->create($borrowedRoom, 1);
+            $agreementService->create($borrowedRoom, BorrowedRoomAgreement::AGREEMENT_STATUS_ACCEPTED);
             $status = $agreementService->ableToAccept($borrowedRoom);
             switch ($status) {
-                case 'accepted':
+                case BorrowedRoomAgreementService::ACCEPTANCE_STATE_ACCEPTED:
                     $service->updateStatus($borrowedRoom, [
-                        'borrowed_status' => 2
+                        'borrowed_status' => BorrowedRoom::BORROWED_STATUS_ACCEPTED
                     ]);
                     $service->declineOtherRequest($borrowedRoom);
                     $this->notifyUserBookingStatus($borrowedRoom, 'disetujui');
@@ -254,9 +255,9 @@ class BorrowedRoomController extends BaseController
     public function decline(BorrowedRoom $borrowedRoom, BorrowedRoomAgreementService $agreementService, BorrowedRoomService $service)
     {
         try {
-            $agreementService->create($borrowedRoom, 0);
+            $agreementService->create($borrowedRoom, BorrowedRoomAgreement::AGREEMENT_STATUS_DECLINED);
             $service->updateStatus($borrowedRoom, [
-                'borrowed_status' => 0
+                'borrowed_status' => BorrowedRoom::BORROWED_STATUS_CANCELED
             ]);
 
             $this->notifyUserBookingStatus($borrowedRoom, 'ditolak');

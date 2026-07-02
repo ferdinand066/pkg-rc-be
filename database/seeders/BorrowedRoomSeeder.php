@@ -41,7 +41,10 @@ class BorrowedRoomSeeder extends Seeder
                 $startEventTime = $startBorrowingTime->copy()->addMinutes(30);
                 $endEventTime = $startBorrowingTime->copy()->addHour();
 
-                $borrowedStatus = $faker->randomElement([0, 2]);
+                $borrowedStatus = $faker->randomElement([
+                    BorrowedRoom::BORROWED_STATUS_CANCELED,
+                    BorrowedRoom::BORROWED_STATUS_ACCEPTED,
+                ]);
                 $borrowedRoom = BorrowedRoom::create([
                     'room_id' => $room->id,
                     'pic_name' => $faker->firstName(),

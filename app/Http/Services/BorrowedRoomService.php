@@ -82,19 +82,18 @@ class BorrowedRoomService
 
     public function activeRequest($startDate, $endDate)
     {
-        // check borrowedRoom between startDate and endDate and borrowed_status in 1 and 2
         return BorrowedRoom::with('borrowedRoomItems.item', 'borrowedBy', 'room')
             // ->whereBetween('borrowed_date', [$startDate, $endDate])
             ->whereRaw("CONCAT(borrowed_date, ' ', start_borrowing_time) >= ?", [$startDate])
             ->whereRaw("CONCAT(borrowed_date, ' ', end_event_time) <= ?", [$endDate])
-            ->whereIn('borrowed_status', [1, 2])
+            ->whereIn('borrowed_status', [BorrowedRoom::BORROWED_STATUS_PENDING, BorrowedRoom::BORROWED_STATUS_ACCEPTED])
             ->orderBy('start_borrowing_time', 'asc')
             ->get();
     }
 
     public function create($data)
     {
-        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
+        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', BorrowedRoom::BORROWED_STATUS_CANCELED)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
             ->where(function ($query) use ($data) {
@@ -128,7 +127,7 @@ class BorrowedRoomService
 
     public function update(BorrowedRoom $borrowedRoom, $data)
     {
-        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', 0)
+        $conflictingBookings = BorrowedRoom::where('borrowed_status', '<>', BorrowedRoom::BORROWED_STATUS_CANCELED)
             ->where('id', '<>', $borrowedRoom->id)
             ->where('room_id', $data['room_id'])
             ->where('borrowed_date', $data['borrowed_date'])
@@ -180,15 +179,15 @@ class BorrowedRoomService
                             ->where('end_event_time', '>=', $borrowedRoom->end_event_time);
                     });
             })
-            ->where('borrowed_status', 1)
+            ->where('borrowed_status', BorrowedRoom::BORROWED_STATUS_PENDING)
             ->update([
-                'borrowed_status' => 0
+                'borrowed_status' => BorrowedRoom::BORROWED_STATUS_CANCELED
             ]);
     }
 
     public function getRecurringBorrowedRooms($data)
     {
-        return BorrowedRoom::where('borrowed_status', '<>', 0)
+        return BorrowedRoom::where('borrowed_status', '<>', BorrowedRoom::BORROWED_STATUS_CANCELED)
             ->whereBetween('borrowed_date', [$data['start_borrowed_date'], $data['end_borrowed_date']])
             ->where('room_id', $data['room_id'])
             ->where(function ($query) use ($data) {
